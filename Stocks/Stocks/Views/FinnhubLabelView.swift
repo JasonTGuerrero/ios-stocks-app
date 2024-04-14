@@ -20,7 +20,11 @@ struct FinnhubLabelView: View {
                     .foregroundColor(.gray)
                     .background(Color.white)
                     .cornerRadius(13)
-                    .padding(20)
+                    .padding(.leading, 20)
+                    .padding(.trailing, 20)
+                    .padding(.top, 0)
+                    .padding(.bottom, 120)
+                    .contentMargins(0)
             }
         }
 }
