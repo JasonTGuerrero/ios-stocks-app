@@ -9,8 +9,8 @@ import SwiftUI
 
 struct PortfolioView: View {
     
-    var cashBalance: String = ""
-    
+    @Binding var cashBalance: Float?
+
     var body: some View {
         VStack(spacing: 0) {
             Text("PORTFOLIO")
@@ -27,7 +27,7 @@ struct PortfolioView: View {
                         .frame(maxWidth: .infinity, maxHeight: 35, alignment: .leading)
                         .padding(.top, -2)
                         .padding(.leading, 7)
-                    Text("$" + String(format: "%.2f", 25000.00))
+                    Text("$" + String(format: "%.2f", cashBalance!))
                         .font(.system(size: 22))
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -40,8 +40,8 @@ struct PortfolioView: View {
                     Text("Cash Balance")
                         .fontWeight(.none)
                     .font(.system(size: 22))
-//                    Text("$" + String(format: "%.2f", 25000.00))
-                    Text("$\(cashBalance)")
+                    Text("$" + String(format: "%.2f", cashBalance!))
+//                    Text("$\(String(describing: cashBalance))")
                         .font(.system(size: 22))
                         .fontWeight(.bold)
                         .padding(.trailing, 10)
@@ -61,5 +61,5 @@ struct PortfolioView: View {
 }
 
 #Preview {
-    PortfolioView()
+    PortfolioView(cashBalance: .constant(25000.00))
 }

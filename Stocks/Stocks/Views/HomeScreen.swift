@@ -1,11 +1,12 @@
 import SwiftUI
 import Alamofire
+import SwiftyJSON
 
 let url = "http://localhost:3000"
 
 struct HomeScreen: View {
     @State private var searchText: String = ""
-    @State private var money: String? = nil // Initial value set to nil
+    @State private var money: Float? = nil // Initial value set to nil
 //    @State private var money: String? = ""  Initial value set to nil
 
 
@@ -18,7 +19,7 @@ struct HomeScreen: View {
                     DateView()
                         .padding([.leading, .trailing, .bottom])
                     //                    Spacer()
-                    PortfolioView(cashBalance: money ?? "")
+                    PortfolioView(cashBalance: $money)
                         .padding([.leading, .trailing, .top])
                     //                    Spacer(minLength: 10)
                     FavoritesView()
@@ -39,6 +40,7 @@ struct HomeScreen: View {
                 Text("Fetching Data...")
             }
                 .onAppear {
+                    print("calling fetchMoney")
                     fetchMoney()
                 }
         }
@@ -52,19 +54,25 @@ struct HomeScreen: View {
     }
     
     func fetchMoney() {
-        AF.request("\(url)/money/")
-            .validate()
-            .responseJSON { response in
-                switch response.result {
-                case .success(let value):
-                    if let moneyData = value as? [String: Any],
-                       let money = moneyData["money"] as? String {
-                        self.money = money
+        AF.request("\(url)/money/").validate().responseJSON { response in
+            switch response.result {
+            case .success:
+                if let moneyData = response.data {
+                    let moneyJSON = JSON(moneyData)
+                    let money = moneyJSON["money"].stringValue
+                    if let moneyFloat = Float(money) {
+                        print("Money float value:", moneyFloat)
+                        self.money = moneyFloat
+                    } else {
+                        print("Failed to convert money to float")
+                        // Handle conversion failure
                     }
-                case .failure(let error):
-                    print(error)
                 }
+            case .failure(let error):
+                print("Error fetching money:", error)
+                // Handle request failure
             }
+        }
     }
 }
 
