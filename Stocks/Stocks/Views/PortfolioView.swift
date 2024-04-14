@@ -40,7 +40,8 @@ struct PortfolioView: View {
                     Text("Cash Balance")
                         .fontWeight(.none)
                     .font(.system(size: 22))
-                    Text("$" + String(format: "%.2f", 25000.00))
+//                    Text("$" + String(format: "%.2f", 25000.00))
+                    Text("$\(cashBalance)")
                         .font(.system(size: 22))
                         .fontWeight(.bold)
                         .padding(.trailing, 10)
@@ -52,7 +53,6 @@ struct PortfolioView: View {
             .padding(.leading, 5)
             .padding(.trailing, 5)
             .padding(.top, 5)
-//            .padding(.bottom, 7)
             .background(Color.white)
             .cornerRadius(12)
         }

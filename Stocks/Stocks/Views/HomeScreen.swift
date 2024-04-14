@@ -1,28 +1,29 @@
 import SwiftUI
 import Alamofire
 
-let url = "http://localhost3000"
+let url = "http://localhost:3000"
 
 struct HomeScreen: View {
     @State private var searchText: String = ""
-    @State private var money: String = ""
+    @State private var money: String? = nil // Initial value set to nil
+//    @State private var money: String? = ""  Initial value set to nil
+
 
     
     var body: some View {
         
-        var _: Float = 0.0
-        
+        if money != nil {
             NavigationView {
                 VStack() {
                     DateView()
                         .padding([.leading, .trailing, .bottom])
-//                    Spacer()
-                    PortfolioView()
+                    //                    Spacer()
+                    PortfolioView(cashBalance: money ?? "")
                         .padding([.leading, .trailing, .top])
-//                    Spacer(minLength: 10)
+                    //                    Spacer(minLength: 10)
                     FavoritesView()
                         .padding([.leading, .trailing, .top])
-
+                    
                     FinnhubLabelView()
                     Spacer(minLength: 1)
                 }
@@ -33,6 +34,15 @@ struct HomeScreen: View {
                     EditButton()
                 }
             }
+        } else {
+            ProgressView {
+                Text("Fetching Data...")
+            }
+                .onAppear {
+                    fetchMoney()
+                }
+        }
+        
     }
     
     func currentDate() -> String {
@@ -50,7 +60,6 @@ struct HomeScreen: View {
                     if let moneyData = value as? [String: Any],
                        let money = moneyData["money"] as? String {
                         self.money = money
-                        print(self.money)
                     }
                 case .failure(let error):
                     print(error)
