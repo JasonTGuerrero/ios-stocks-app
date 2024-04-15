@@ -16,12 +16,21 @@ struct FavoritesView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 22)
                 .padding(.bottom, 5)
-//            List {
+//            LazyVStack {
 //                NavigationLink(destination: HomeScreen()) {
 //                    Text("AAPL")
 //                }
 //                NavigationLink(destination: HomeScreen()) {
 //                    Text("NVDA")
+//                }
+//                NavigationLink(destination: HomeScreen()) {
+//                    Text("TSLA")
+//                }
+//                NavigationLink(destination: HomeScreen()) {
+//                    Text("TSLA")
+//                }
+//                NavigationLink(destination: HomeScreen()) {
+//                    Text("TSLA")
 //                }
 //                NavigationLink(destination: HomeScreen()) {
 //                    Text("TSLA")

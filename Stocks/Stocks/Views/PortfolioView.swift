@@ -53,6 +53,7 @@ struct PortfolioView: View {
             .padding(.leading, 5)
             .padding(.trailing, 5)
             .padding(.top, 5)
+            .padding(.bottom, 5)
             .background(Color.white)
             .cornerRadius(12)
         }

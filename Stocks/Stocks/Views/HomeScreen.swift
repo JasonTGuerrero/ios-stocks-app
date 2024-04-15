@@ -14,27 +14,35 @@ struct HomeScreen: View {
     var body: some View {
         
         if money != nil {
+            
             NavigationView {
-                VStack() {
-                    DateView()
-                        .padding([.leading, .trailing, .bottom])
-                    //                    Spacer()
-                    PortfolioView(cashBalance: $money)
-                        .padding([.leading, .trailing, .top])
-                    //                    Spacer(minLength: 10)
-                    FavoritesView()
-                        .padding([.leading, .trailing, .top])
-                    
-                    FinnhubLabelView()
-                    Spacer(minLength: 1)
-                }
-                .background(Color(UIColor.secondarySystemBackground))
-                .navigationBarTitle("Stocks")
-                .searchable(text: $searchText)
-                .toolbar {
-                    EditButton()
+                if searchText == "" {
+                    ScrollView {
+                        //                    if searchText == "" {
+                        DateView()
+                            .padding([.leading, .trailing, .bottom])
+                        PortfolioView(cashBalance: $money)
+                            .padding([.leading, .trailing, .top])
+                        FavoritesView()
+                            .padding([.leading, .trailing, .top])
+                        
+                        FinnhubLabelView()
+                        Spacer(minLength: 1)
+                        //                    }
+                        //                    else {
+                        //                        SearchScreenView()
+                        //                    }
+                    }
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .navigationBarTitle("Stocks")
+                    .toolbar {
+                        EditButton()
+                    }
+                } else {
+                    SearchScreenView(searchText: $searchText)
                 }
             }
+            .searchable(text: $searchText)
         } else {
             ProgressView {
                 Text("Fetching Data...")

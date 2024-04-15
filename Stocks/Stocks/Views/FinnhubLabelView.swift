@@ -23,7 +23,7 @@ struct FinnhubLabelView: View {
                     .padding(.leading, 20)
                     .padding(.trailing, 20)
                     .padding(.top, 0)
-                    .padding(.bottom, 120)
+//                    .padding(.bottom, 120)
                     .contentMargins(0)
             }
         }
