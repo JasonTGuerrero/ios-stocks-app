@@ -19,6 +19,8 @@ struct SearchScreenView: View {
     @Binding var searchText: String
     @State private var searchResults: [SearchResult] = []
     @State private var debounceWorkItem: DispatchWorkItem?
+    @State private var isFavorite = false
+
 
     var body: some View {
         List(searchResults) { result in
@@ -35,6 +37,15 @@ struct SearchScreenView: View {
             }
             
         }
+        .navigationBarTitle("Stocks", displayMode: .inline)
+        .navigationBarItems(trailing:
+            Button(action: {
+                // Add action for the plus button here
+                isFavorite.toggle()
+            }) {
+                Image(systemName: isFavorite ? "plus.circle.fill" : "plus.circle")
+            }
+        )
         .onAppear {
             fetchAutocompleteResults()
         }
@@ -48,17 +59,8 @@ struct SearchScreenView: View {
             debounceWorkItem = newWorkItem
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: debounceWorkItem!)
         }
-        .navigationBarTitle("Stocks", displayMode: .inline)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: backButton) // Use custom back button
     }
-    
-    private var backButton: some View {
-        Button(action: {}) {
-            Image(systemName: "chevron.left")
-            Text("Stocks") // Customize the text here
-        }
-    }
+
 
     func fetchAutocompleteResults() {
         let currentSearchText = searchText // Capture the current value of searchText

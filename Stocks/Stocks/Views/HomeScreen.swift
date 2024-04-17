@@ -18,7 +18,6 @@ struct HomeScreen: View {
             NavigationView {
                 if searchText == "" {
                     ScrollView {
-                        //                    if searchText == "" {
                         DateView()
                             .padding([.leading, .trailing, .bottom])
                         PortfolioView(cashBalance: $money)
@@ -28,10 +27,6 @@ struct HomeScreen: View {
                         
                         FinnhubLabelView()
                         Spacer(minLength: 1)
-                        //                    }
-                        //                    else {
-                        //                        SearchScreenView()
-                        //                    }
                     }
                     .background(Color(UIColor.secondarySystemBackground))
                     .navigationBarTitle("Stocks")
@@ -47,10 +42,11 @@ struct HomeScreen: View {
             ProgressView {
                 Text("Fetching Data...")
             }
-                .onAppear {
-                    print("calling fetchMoney")
-                    fetchMoney()
-                }
+            .background(Color.white)
+            .onAppear {
+                print("calling fetchMoney")
+                fetchMoney()
+            }
         }
         
     }
