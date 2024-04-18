@@ -19,7 +19,6 @@ struct SearchScreenView: View {
     @Binding var searchText: String
     @State private var searchResults: [SearchResult] = []
     @State private var debounceWorkItem: DispatchWorkItem?
-    @State private var isFavorite = false
 
 
     var body: some View {
@@ -38,14 +37,6 @@ struct SearchScreenView: View {
             
         }
         .navigationBarTitle("Stocks", displayMode: .inline)
-        .navigationBarItems(trailing:
-            Button(action: {
-                // Add action for the plus button here
-                isFavorite.toggle()
-            }) {
-                Image(systemName: isFavorite ? "plus.circle.fill" : "plus.circle")
-            }
-        )
         .onAppear {
             fetchAutocompleteResults()
         }

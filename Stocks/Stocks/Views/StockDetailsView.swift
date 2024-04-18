@@ -13,21 +13,23 @@ struct StockDetailsView: View {
     let tickerSymbol: String
     @State private var profileData: JSON? = nil
     @State private var quoteData: JSON? = nil
-    @State private var isShowingAddButton: Bool = false // State to control the visibility of the add button
+    @State private var hourlyChartData: JSON? = nil
+    @State private var isFavorite: Bool = false
 
     
     var body: some View {
         
         if (profileData == nil
-            && quoteData == nil) {
+            && quoteData == nil
+            && hourlyChartData == nil) {
             ProgressView {
                 Text("Fetching Data...")
             }
             .background(Color.white)
             .onAppear {
                 fetchProfileData()
-                print("calling fetchQuoteData")
                 fetchQuoteData()
+                fetchHourlyChartData()
             }
         } else {
             NavigationView {
@@ -36,7 +38,8 @@ struct StockDetailsView: View {
                         Text(companyName)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding([.leading, .top])
+                            .padding(.leading)
+                            .padding(.top, 10)
                     }
                     
                     HStack {
@@ -61,18 +64,28 @@ struct StockDetailsView: View {
                         }
                         
                         
-//                        Image(systemName: "arrow.up.forward")
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding([.top, .leading])
-                    
-                    
-                            
+                    .padding(.leading)
+                    .padding(.top, 10)
                         
                 }
-                .navigationBarTitle(tickerSymbol)
 
             }
+            .navigationTitle(tickerSymbol)
+            .navigationBarTitleDisplayMode(.large) // or .large
+            .navigationBarItems(trailing:
+                Button(action: {
+                    // Action to perform when the button is tapped
+                    isFavorite.toggle()
+                }) {
+                    Image(systemName: isFavorite ? "plus.circle.fill" : "plus.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit) // or .fill
+                        .frame(width: 24, height: 24) // Adjust the width and height as needed
+                }
+            )
+
         }
         
     }
@@ -98,11 +111,26 @@ struct StockDetailsView: View {
             case .success:
                 if let quoteData = response.data {
                     self.quoteData = JSON(quoteData)
-                    print(self.quoteData!)
+//                    print(self.quoteData!)
                 }
 
             case .failure(let error):
                 print("Error fetching company quote results:", error)
+            }
+        }
+    }
+    
+    func fetchHourlyChartData() {
+        AF.request("\(url)/stock-hourly-chart/\(tickerSymbol)").validate().responseJSON { response in
+            switch response.result {
+            case .success:
+                if let hourlyChartData = response.data {
+                    self.hourlyChartData = JSON(hourlyChartData)
+                    print(self.hourlyChartData!)
+                }
+
+            case .failure(let error):
+                print("Error fetching hourly stock data:", error)
             }
         }
     }
