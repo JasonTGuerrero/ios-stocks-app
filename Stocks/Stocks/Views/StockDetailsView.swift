@@ -10,36 +10,45 @@ import SwiftyJSON
 import Alamofire
 import Highcharts
 import SwiftUI
+import UIKit
 import WebKit
 
 struct StockChartWebView: UIViewRepresentable {
     let tickerSymbol: String
     let priceChange: Double
+    private let webView = WKWebView()
+    
 
     func makeUIView(context: Context) -> WKWebView {
-            let webView = WKWebView()
+        let webView = WKWebView()
+        webView.navigationDelegate = context.coordinator
 
-            // Read the contents of the HTML file
-        guard let htmlFilePath = Bundle.main.url(forResource: "hourlyStockChart", withExtension: "html", subdirectory: "Resources") else {
+        // Read the contents of the HTML file
+        guard let htmlFilePath = Bundle.main.url(forResource: "hourly", withExtension: "html") else {
             fatalError("HTML file not found")
         }
+        print("HTML file URL:", htmlFilePath)
 
         do {
             // Read the contents of the HTML file as a String
-            var htmlString = try String(contentsOf: htmlFilePath)
+            let htmlString = try String(contentsOf: htmlFilePath)
+//            print("HTML content:", htmlString)
 
             // Replace occurrences of '{tickerSymbol}' and '{priceChange}' with actual values
-            htmlString = htmlString.replacingOccurrences(of: "{tickerSymbol}", with: tickerSymbol)
-            htmlString = htmlString.replacingOccurrences(of: "{priceChange}", with: String(format: "%.2f", priceChange))
+            let modifiedHTMLString = htmlString
+                .replacingOccurrences(of: "{-tickerSymbol-}", with: tickerSymbol)
+                .replacingOccurrences(of: "{-priceChange-}", with: String(format: "%.2f", priceChange))
+            print("Modified HTML content:", modifiedHTMLString)
 
             // Load the modified HTML content into WKWebView
-            webView.loadHTMLString(htmlString, baseURL: Bundle.main.bundleURL)
+            webView.loadHTMLString(modifiedHTMLString, baseURL: htmlFilePath)
         } catch {
             fatalError("Error loading HTML content: \(error)")
         }
 
         return webView
-        }
+    }
+
 
 
     func updateUIView(_ webView: WKWebView, context: Context) {
@@ -61,6 +70,20 @@ struct StockChartWebView: UIViewRepresentable {
     }
 }
 
+
+struct WebView: UIViewRepresentable {
+    let url: URL
+    
+    func makeUIView(context: Context) -> WKWebView  {
+        let wkwebView = WKWebView()
+        let request = URLRequest(url: url)
+        wkwebView.load(request)
+        return wkwebView
+    }
+    
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+    }
+}
 
 struct StockDetailsView: View {
     let tickerSymbol: String
@@ -122,7 +145,8 @@ struct StockDetailsView: View {
                     .padding(.leading)
                     .padding(.top, 10)
                     
-//                    StockChartWebView(tickerSymbol: tickerSymbol, priceChange: quoteData?["d"].doubleValue ?? 0.0)
+                    StockChartWebView(tickerSymbol: tickerSymbol, priceChange: quoteData?["d"].doubleValue ?? 0.0)
+                        .frame(height: 300)
                     
                         
                 }

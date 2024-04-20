@@ -9,5 +9,10 @@
 		<key>UIImageName</key>
 		<string>logo</string>
 	</dict>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoadsInWebContent</key>
+        <true/>
+    </dict>
 </dict>
 </plist>

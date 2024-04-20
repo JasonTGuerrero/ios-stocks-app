@@ -54,7 +54,7 @@ struct SearchScreenView: View {
 
 
     func fetchAutocompleteResults() {
-        print("fetching autocomplete results...")
+//        print("fetching autocomplete results...")
         let currentSearchText = searchText // Capture the current value of searchText
         AF.request("\(url)/stock-search/\(currentSearchText)").validate().responseJSON { response in
             switch response.result {
