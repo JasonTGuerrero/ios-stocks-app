@@ -1,5 +1,5 @@
 {
-  "originHash" : "6ead3f4bc19a679f8655874615759a96e1788a87fe96b4eb613d2ad732ac759e",
+  "originHash" : "f2d2cbf3d50360a0aaec20431425f0bd6c8e83270d576a69e71b23627a9faf2d",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "f455c2975872ccd2d9c81594c658af65716e9b9a",
         "version" : "5.9.1"
+      }
+    },
+    {
+      "identity" : "highcharts-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/highcharts/highcharts-ios.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "8963b14310e2ef3fa415ea68511714888a1c1c32"
       }
     },
     {

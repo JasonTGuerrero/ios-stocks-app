@@ -8,6 +8,60 @@
 import SwiftUI
 import SwiftyJSON
 import Alamofire
+import Highcharts
+
+import SwiftUI
+import WebKit
+
+struct StockChartWebView: UIViewRepresentable {
+    let tickerSymbol: String
+    let priceChange: Double
+
+    func makeUIView(context: Context) -> WKWebView {
+            let webView = WKWebView()
+
+            // Read the contents of the HTML file
+        guard let htmlFilePath = Bundle.main.url(forResource: "hourlyStockChart", withExtension: "html", subdirectory: "Resources") else {
+            fatalError("HTML file not found")
+        }
+
+        do {
+            // Read the contents of the HTML file as a String
+            var htmlString = try String(contentsOf: htmlFilePath)
+
+            // Replace occurrences of '{tickerSymbol}' and '{priceChange}' with actual values
+            htmlString = htmlString.replacingOccurrences(of: "{tickerSymbol}", with: tickerSymbol)
+            htmlString = htmlString.replacingOccurrences(of: "{priceChange}", with: String(format: "%.2f", priceChange))
+
+            // Load the modified HTML content into WKWebView
+            webView.loadHTMLString(htmlString, baseURL: Bundle.main.bundleURL)
+        } catch {
+            fatalError("Error loading HTML content: \(error)")
+        }
+
+        return webView
+        }
+
+
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        // Update the view if needed
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(tickerSymbol: tickerSymbol)
+    }
+
+    class Coordinator: NSObject, WKNavigationDelegate {
+        let tickerSymbol: String
+
+        init(tickerSymbol: String) {
+            self.tickerSymbol = tickerSymbol
+        }
+
+        // Implement WKNavigationDelegate methods if needed
+    }
+}
+
 
 struct StockDetailsView: View {
     let tickerSymbol: String
@@ -68,6 +122,9 @@ struct StockDetailsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading)
                     .padding(.top, 10)
+                    
+//                    StockChartWebView(tickerSymbol: tickerSymbol, priceChange: quoteData?["d"].doubleValue ?? 0.0)
+                    
                         
                 }
 
@@ -89,6 +146,41 @@ struct StockDetailsView: View {
         }
         
     }
+    
+    
+    
+    var stockChartOptions: HIOptions {
+            let chart = HIChart()
+
+
+            let title = HITitle()
+            title.text = "Stock Price"
+
+            let xAxis = HIXAxis()
+            xAxis.type = "datetime"
+
+            let yAxis = HIYAxis()
+            yAxis.title = HITitle()
+            yAxis.title.text = "Price"
+
+            let series = HISeries()
+            series.name = "Stock Price"
+            series.data = [
+                [1_625_000_000_000, 100],
+                [1_625_000_360_000, 110],
+                [1_625_000_720_000, 105],
+                // Add more data points here...
+            ]
+
+            let options = HIOptions()
+            options.chart = chart
+            options.title = title
+            options.xAxis = [xAxis]
+            options.yAxis = [yAxis]
+            options.series = [series]
+
+            return options
+        }
     
     func fetchProfileData() {
         AF.request("\(url)/company-profile/\(tickerSymbol)").validate().responseJSON { response in

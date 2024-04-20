@@ -1,0 +1,88 @@
+<html>
+	<head>
+		<title>Hourly Stock Chart</title>
+		<!-- Include Highcharts CDN -->
+		<script src="https://code.highcharts.com/stock/highstock.js"></script>
+		<script src="https://code.highcharts.com/stock/modules/data.js"></script>
+		<!-- Include necessary scripts and stylesheets -->
+	</head>
+	<body style="margin: 0; padding: 0">
+		<div id="chart-container" style="width: 100%; height: 100%"></div>
+		<script>
+			const queryString = window.location.search;
+			const urlParams = new URLSearchParams(queryString);
+
+			// Get the value of the 'tickerSymbol' parameter
+			// const tickerSymbol = urlParams.get("tickerSymbol");
+			const tickerSymbol = "{tickerSymbol}";
+			const priceChange = "{priceChange}";
+			const url = "http://localhost:3000";
+
+			async function fetchHourlyChartData() {
+				const apiUrl = `${url}/stock-hourly-chart/${tickerSymbol}`;
+				try {
+					const response = await fetch(apiUrl);
+					if (!response.ok) {
+						throw new Error("Failed to fetch data");
+					}
+					const data = await response.json();
+					console.log("Fetched stock data:", data);
+					return data;
+				} catch (error) {
+					// Handle errors
+					console.error("Error fetching stock data:", error);
+					return null;
+				}
+			}
+
+			async function fetchHourlyDataAndRenderChart() {
+				try {
+					let hourlyChartData = await fetchHourlyChartData();
+					hourlyChartData["results"] =
+						hourlyChartData["results"].slice(-6);
+					console.log(hourlyChartData);
+					let prices = [];
+					hourlyChartData["results"].forEach((result) => {
+						prices.push([result.t, result.c]);
+					});
+					console.log(prices);
+					// Example: Render chart using the fetched data
+					if (hourlyChartData) {
+						renderChart(prices);
+					} else {
+						console.log("Unable to render chart");
+					}
+				} catch (error) {
+					// Handle errors
+					console.error("Error:", error);
+				}
+			}
+
+			function renderChart(data) {
+				Highcharts.stockChart("chart-container", {
+					rangeSelector: {
+						enabled: false,
+					},
+					title: {
+						text: `${tickerSymbol} Hourly Price Variation`,
+					},
+					yAxis: {
+						tickAmount: 5,
+					},
+					series: [
+						{
+							name: `${tickerSymbol}`,
+							data: data,
+							tooltip: {
+								valueDecimals: 2,
+							},
+							color: priceChange < 0 ? "red" : "green",
+						},
+					],
+				});
+			}
+
+			fetchHourlyDataAndRenderChart();
+		</script>
+	</body>
+</html>

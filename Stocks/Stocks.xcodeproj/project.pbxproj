@@ -13,6 +13,8 @@
 		F415193A2BCA7B4300C97AA2 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41519392BCA7B4200C97AA2 /* FavoritesView.swift */; };
 		F415193E2BCC646F00C97AA2 /* SearchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F415193D2BCC646F00C97AA2 /* SearchScreenView.swift */; };
 		F41519402BCCE42C00C97AA2 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F415193F2BCCE42C00C97AA2 /* StockDetailsView.swift */; };
+		F41519432BD0F7C100C97AA2 /* Highcharts in Frameworks */ = {isa = PBXBuildFile; productRef = F41519422BD0F7C100C97AA2 /* Highcharts */; };
+		F41519462BD3767B00C97AA2 /* hourlyStockChart.html in Resources */ = {isa = PBXBuildFile; fileRef = F41519452BD3767B00C97AA2 /* hourlyStockChart.html */; };
 		F42F51812BC51BCC0013E834 /* StocksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F51802BC51BCC0013E834 /* StocksApp.swift */; };
 		F42F51832BC51BCC0013E834 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F51822BC51BCC0013E834 /* ContentView.swift */; };
 		F42F51852BC51BCD0013E834 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F42F51842BC51BCD0013E834 /* Assets.xcassets */; };
@@ -51,6 +53,7 @@
 		F41519392BCA7B4200C97AA2 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		F415193D2BCC646F00C97AA2 /* SearchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreenView.swift; sourceTree = "<group>"; };
 		F415193F2BCCE42C00C97AA2 /* StockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailsView.swift; sourceTree = "<group>"; };
+		F41519452BD3767B00C97AA2 /* hourlyStockChart.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = hourlyStockChart.html; sourceTree = "<group>"; };
 		F42F517D2BC51BCC0013E834 /* Stocks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stocks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F42F51802BC51BCC0013E834 /* StocksApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StocksApp.swift; sourceTree = "<group>"; };
 		F42F51822BC51BCC0013E834 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = "../New Group/ContentView.swift"; sourceTree = "<group>"; };
@@ -72,6 +75,7 @@
 				F42F51B22BC51E910013E834 /* SwiftyJSON in Frameworks */,
 				F42F51AF2BC51E7E0013E834 /* Kingfisher in Frameworks */,
 				F42F51AC2BC51DE40013E834 /* Alamofire in Frameworks */,
+				F41519432BD0F7C100C97AA2 /* Highcharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +101,14 @@
 			children = (
 			);
 			path = Other;
+			sourceTree = "<group>";
+		};
+		F41519442BD3742900C97AA2 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F41519452BD3767B00C97AA2 /* hourlyStockChart.html */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		F42F51742BC51BCC0013E834 = {
@@ -125,6 +137,7 @@
 				F41519322BC5298200C97AA2 /* Info.plist */,
 				F415192F2BC5267500C97AA2 /* Other */,
 				F42F51802BC51BCC0013E834 /* StocksApp.swift */,
+				F41519442BD3742900C97AA2 /* Resources */,
 				F42F51B42BC51F610013E834 /* Views */,
 				F42F51842BC51BCD0013E834 /* Assets.xcassets */,
 				F42F51862BC51BCD0013E834 /* Preview Content */,
@@ -192,6 +205,7 @@
 				F42F51AB2BC51DE40013E834 /* Alamofire */,
 				F42F51AE2BC51E7E0013E834 /* Kingfisher */,
 				F42F51B12BC51E910013E834 /* SwiftyJSON */,
+				F41519422BD0F7C100C97AA2 /* Highcharts */,
 			);
 			productName = Stocks;
 			productReference = F42F517D2BC51BCC0013E834 /* Stocks.app */;
@@ -269,6 +283,7 @@
 				F42F51AA2BC51D350013E834 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				F42F51AD2BC51E7E0013E834 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				F42F51B02BC51E910013E834 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
+				F41519412BD0F7C100C97AA2 /* XCRemoteSwiftPackageReference "highcharts-ios" */,
 			);
 			productRefGroup = F42F517E2BC51BCC0013E834 /* Products */;
 			projectDirPath = "";
@@ -286,6 +301,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F41519462BD3767B00C97AA2 /* hourlyStockChart.html in Resources */,
 				F42F51882BC51BCD0013E834 /* Preview Assets.xcassets in Resources */,
 				F42F51852BC51BCD0013E834 /* Assets.xcassets in Resources */,
 			);
@@ -646,6 +662,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F41519412BD0F7C100C97AA2 /* XCRemoteSwiftPackageReference "highcharts-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/highcharts/highcharts-ios.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		F42F51AA2BC51D350013E834 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -673,6 +697,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F41519422BD0F7C100C97AA2 /* Highcharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F41519412BD0F7C100C97AA2 /* XCRemoteSwiftPackageReference "highcharts-ios" */;
+			productName = Highcharts;
+		};
 		F42F51AB2BC51DE40013E834 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F42F51AA2BC51D350013E834 /* XCRemoteSwiftPackageReference "Alamofire" */;
