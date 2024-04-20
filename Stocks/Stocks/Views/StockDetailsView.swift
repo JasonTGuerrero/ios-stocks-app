@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftyJSON
 import Alamofire
 import Highcharts
-
 import SwiftUI
 import WebKit
 
@@ -148,40 +147,6 @@ struct StockDetailsView: View {
     }
     
     
-    
-    var stockChartOptions: HIOptions {
-            let chart = HIChart()
-
-
-            let title = HITitle()
-            title.text = "Stock Price"
-
-            let xAxis = HIXAxis()
-            xAxis.type = "datetime"
-
-            let yAxis = HIYAxis()
-            yAxis.title = HITitle()
-            yAxis.title.text = "Price"
-
-            let series = HISeries()
-            series.name = "Stock Price"
-            series.data = [
-                [1_625_000_000_000, 100],
-                [1_625_000_360_000, 110],
-                [1_625_000_720_000, 105],
-                // Add more data points here...
-            ]
-
-            let options = HIOptions()
-            options.chart = chart
-            options.title = title
-            options.xAxis = [xAxis]
-            options.yAxis = [yAxis]
-            options.series = [series]
-
-            return options
-        }
-    
     func fetchProfileData() {
         AF.request("\(url)/company-profile/\(tickerSymbol)").validate().responseJSON { response in
             switch response.result {
@@ -218,7 +183,7 @@ struct StockDetailsView: View {
             case .success:
                 if let hourlyChartData = response.data {
                     self.hourlyChartData = JSON(hourlyChartData)
-                    print(self.hourlyChartData!)
+//                    print(self.hourlyChartData!)
                 }
 
             case .failure(let error):

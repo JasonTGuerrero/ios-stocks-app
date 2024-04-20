@@ -101,15 +101,25 @@ app.get("/company-quote/:symbol", async (req, res) => {
 // Endpoint to search for stock symbols on Finnhub
 app.get("/stock-search/:symbol", async (req, res) => {
 	try {
-		const symbol = req.params.symbol;
-		const apiUrl = `https://finnhub.io/api/v1/search?q=${symbol}&token=${FINNHUB_API_KEY}`;
-		const response = await axios.get(apiUrl);
-		res.json(response.data);
+	    const symbol = req.params.symbol;
+	    const apiUrl = `https://finnhub.io/api/v1/search?q=${symbol}&token=${FINNHUB_API_KEY}`;
+	    const response = await axios.get(apiUrl);
+	    
+	    // Filter the results to include only "Common Stock" and symbols without '.'
+	    const filteredResults = response.data.result.filter(result => {
+		   return result.type === "Common Stock" && !result.symbol.includes(".");
+	    });
+ 
+	    // Update the response data with the filtered results
+	    response.data.result = filteredResults;
+ 
+	    res.json(response.data);
 	} catch (error) {
-		console.error("Error searching for stock symbols:", error);
-		res.status(500).json({ error: "Failed to search for stock symbols" });
+	    console.error("Error searching for stock symbols:", error);
+	    res.status(500).json({ error: "Failed to search for stock symbols" });
 	}
-});
+ });
+ 
 
 // Endpoint to fetch company news from Finnhub
 app.get("/company-news/:symbol", async (req, res) => {

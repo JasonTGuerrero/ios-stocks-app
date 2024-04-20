@@ -40,7 +40,7 @@ struct SearchScreenView: View {
         .onAppear {
             fetchAutocompleteResults()
         }
-        .onChange(of: searchText) { newValue in
+        .onChange(of: searchText) {
             // Cancel previous debounce work item
             debounceWorkItem?.cancel()
             // Schedule new debounce work item
@@ -48,23 +48,32 @@ struct SearchScreenView: View {
                 fetchAutocompleteResults()
             }
             debounceWorkItem = newWorkItem
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: debounceWorkItem!)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: debounceWorkItem!)
         }
     }
 
 
     func fetchAutocompleteResults() {
+        print("fetching autocomplete results...")
         let currentSearchText = searchText // Capture the current value of searchText
         AF.request("\(url)/stock-search/\(currentSearchText)").validate().responseJSON { response in
             switch response.result {
             case .success:
                 if currentSearchText == self.searchText { // Check if searchText has changed
                     if let autocompleteData = response.data {
-                        let autocompleteJSON = JSON(autocompleteData)
-                        let results = autocompleteJSON.arrayValue.map { json in
-                            SearchResult(symbol: json["symbol"].stringValue, description: json["description"].stringValue)
+                        do {
+                            let autocompleteJSON = try JSON(data: autocompleteData)
+//                            print("autocompleteJSON: ", autocompleteJSON)
+                            let results = autocompleteJSON["result"].arrayValue.map { json in
+                                SearchResult(symbol: json["symbol"].stringValue, description: json["description"].stringValue)
+                            }
+                            DispatchQueue.main.async {
+                                searchResults = results // Update searchResults on the main queue
+//                                print("searchResults: ", results)
+                            }
+                        } catch {
+                            print("Error parsing JSON:", error)
                         }
-                        searchResults = results
                     }
                 }
             case .failure(let error):
