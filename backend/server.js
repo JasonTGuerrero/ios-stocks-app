@@ -238,24 +238,25 @@ function formatDate(date) {
 // Endpoint to fetch stock chart data from Polygon.io
 app.get("/stock-chart/:symbol", async (req, res) => {
 	try {
-		const symbol = req.params.symbol;
-		const today = new Date();
-		const startDate = new Date(
-			today.getFullYear(),
-			today.getMonth() - 6,
-			today.getDate() - 1
-		)
-			.toISOString()
-			.split("T")[0];
-		const endDate = today.toISOString().split("T")[0];
-		const apiUrl = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/day/${startDate}/${endDate}?adjusted=true&sort=asc&apiKey=${POLYGON_API_KEY}`;
-		const response = await axios.get(apiUrl);
-		res.json(response.data);
+	    const symbol = req.params.symbol;
+	    const today = new Date();
+	    const startDate = new Date(
+		   today.getFullYear() - 2, // Subtract 2 years from the current year
+		   today.getMonth(), // Use the current month
+		   today.getDate() // Use the current day
+	    )
+		   .toISOString()
+		   .split("T")[0];
+	    const endDate = today.toISOString().split("T")[0];
+	    const apiUrl = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/day/${startDate}/${endDate}?adjusted=true&sort=asc&apiKey=${POLYGON_API_KEY}`;
+	    const response = await axios.get(apiUrl);
+	    res.json(response.data);
 	} catch (error) {
-		console.error("Error fetching stock chart data:", error);
-		res.status(500).json({ error: "Failed to fetch stock chart data" });
+	    console.error("Error fetching stock chart data:", error);
+	    res.status(500).json({ error: "Failed to fetch stock chart data" });
 	}
-});
+ });
+ 
 
 // Start the server
 app.listen(PORT, () => {

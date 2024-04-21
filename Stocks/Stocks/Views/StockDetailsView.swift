@@ -16,7 +16,7 @@ import WebKit
 struct HourlyStockChartWebView: UIViewRepresentable {
     let tickerSymbol: String
     let priceChange: Double
-    private let webView = WKWebView()
+//    private let webView = WKWebView()
     
 
     func makeUIView(context: Context) -> WKWebView {
@@ -37,7 +37,63 @@ struct HourlyStockChartWebView: UIViewRepresentable {
             let modifiedHTMLString = htmlString
                 .replacingOccurrences(of: "{-tickerSymbol-}", with: tickerSymbol)
                 .replacingOccurrences(of: "{-priceChange-}", with: String(format: "%.2f", priceChange))
-            print("Modified HTML content:", modifiedHTMLString)
+//            print("Modified HTML content:", modifiedHTMLString)
+
+            // Load the modified HTML content into WKWebView
+            webView.loadHTMLString(modifiedHTMLString, baseURL: htmlFilePath)
+        } catch {
+            fatalError("Error loading HTML content: \(error)")
+        }
+
+        return webView
+    }
+
+
+
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        // Update the view if needed
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(tickerSymbol: tickerSymbol)
+    }
+
+    class Coordinator: NSObject, WKNavigationDelegate {
+        let tickerSymbol: String
+
+        init(tickerSymbol: String) {
+            self.tickerSymbol = tickerSymbol
+        }
+
+        // Implement WKNavigationDelegate methods if needed
+    }
+}
+
+struct HistoricalStockChartWebView: UIViewRepresentable {
+    let tickerSymbol: String
+//    let priceChange: Double
+//    private let webView = WKWebView()
+    
+
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.navigationDelegate = context.coordinator
+
+        // Read the contents of the HTML file
+        guard let htmlFilePath = Bundle.main.url(forResource: "historical", withExtension: "html") else {
+            fatalError("HTML file not found")
+        }
+//        print("HTML file URL:", htmlFilePath)
+
+        do {
+            // Read the contents of the HTML file as a String
+            let htmlString = try String(contentsOf: htmlFilePath)
+
+            // Replace occurrences of '{tickerSymbol}' and '{priceChange}' with actual values
+            let modifiedHTMLString = htmlString
+                .replacingOccurrences(of: "{-tickerSymbol-}", with: tickerSymbol)
+//                .replacingOccurrences(of: "{-priceChange-}", with: String(format: "%.2f", priceChange))
+            print("Modified hist HTML content:", modifiedHTMLString)
 
             // Load the modified HTML content into WKWebView
             webView.loadHTMLString(modifiedHTMLString, baseURL: htmlFilePath)
@@ -150,7 +206,8 @@ struct StockDetailsView: View {
                                 Label("Hourly", systemImage: "chart.xyaxis.line")
                             }
                         
-                        Text("Historical")
+                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
+                            .frame(height: 350)
                             .tabItem { Label("Historical", systemImage: "clock.fill") }
                     }
                     .frame(height: 400)

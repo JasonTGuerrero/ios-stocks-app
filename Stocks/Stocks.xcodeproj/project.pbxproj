@@ -25,6 +25,7 @@
 		F42F51AF2BC51E7E0013E834 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F42F51AE2BC51E7E0013E834 /* Kingfisher */; };
 		F42F51B22BC51E910013E834 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = F42F51B12BC51E910013E834 /* SwiftyJSON */; };
 		F4A831342BD3C000000D00C8 /* hourly.html in Resources */ = {isa = PBXBuildFile; fileRef = F4A831332BD3C000000D00C8 /* hourly.html */; };
+		F4A831362BD4C6D5000D00C8 /* historical.html in Resources */ = {isa = PBXBuildFile; fileRef = F4A831352BD4C6D5000D00C8 /* historical.html */; };
 		F4AE9D552BC5201E004E220A /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AE9D542BC5201E004E220A /* HomeScreen.swift */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,7 @@
 		F42F519B2BC51BCD0013E834 /* StocksUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StocksUITests.swift; sourceTree = "<group>"; };
 		F42F519D2BC51BCD0013E834 /* StocksUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StocksUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		F4A831332BD3C000000D00C8 /* hourly.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = hourly.html; sourceTree = "<group>"; };
+		F4A831352BD4C6D5000D00C8 /* historical.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = historical.html; sourceTree = "<group>"; };
 		F4AE9D542BC5201E004E220A /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -130,6 +132,7 @@
 				F415192F2BC5267500C97AA2 /* Other */,
 				F42F51802BC51BCC0013E834 /* StocksApp.swift */,
 				F4A831332BD3C000000D00C8 /* hourly.html */,
+				F4A831352BD4C6D5000D00C8 /* historical.html */,
 				F42F51B42BC51F610013E834 /* Views */,
 				F42F51842BC51BCD0013E834 /* Assets.xcassets */,
 				F42F51862BC51BCD0013E834 /* Preview Content */,
@@ -293,6 +296,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4A831362BD4C6D5000D00C8 /* historical.html in Resources */,
 				F42F51882BC51BCD0013E834 /* Preview Assets.xcassets in Resources */,
 				F42F51852BC51BCD0013E834 /* Assets.xcassets in Resources */,
 				F4A831342BD3C000000D00C8 /* hourly.html in Resources */,
@@ -492,6 +496,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Stocks/Preview Content\"";
+				DEVELOPMENT_TEAM = V7HQ4MU9Q3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Stocks/Info.plist;
@@ -520,6 +525,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Stocks/Preview Content\"";
+				DEVELOPMENT_TEAM = V7HQ4MU9Q3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Stocks/Info.plist;
