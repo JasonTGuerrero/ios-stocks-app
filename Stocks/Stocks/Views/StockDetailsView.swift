@@ -13,7 +13,7 @@ import SwiftUI
 import UIKit
 import WebKit
 
-struct StockChartWebView: UIViewRepresentable {
+struct HourlyStockChartWebView: UIViewRepresentable {
     let tickerSymbol: String
     let priceChange: Double
     private let webView = WKWebView()
@@ -27,12 +27,11 @@ struct StockChartWebView: UIViewRepresentable {
         guard let htmlFilePath = Bundle.main.url(forResource: "hourly", withExtension: "html") else {
             fatalError("HTML file not found")
         }
-        print("HTML file URL:", htmlFilePath)
+//        print("HTML file URL:", htmlFilePath)
 
         do {
             // Read the contents of the HTML file as a String
             let htmlString = try String(contentsOf: htmlFilePath)
-//            print("HTML content:", htmlString)
 
             // Replace occurrences of '{tickerSymbol}' and '{priceChange}' with actual values
             let modifiedHTMLString = htmlString
@@ -144,9 +143,17 @@ struct StockDetailsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading)
                     .padding(.top, 10)
-                    
-                    StockChartWebView(tickerSymbol: tickerSymbol, priceChange: quoteData?["d"].doubleValue ?? 0.0)
-                        .frame(height: 300)
+                    TabView {
+                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: quoteData?["d"].doubleValue ?? -0.01)
+                            .frame(height: 350)
+                            .tabItem {
+                                Label("Hourly", systemImage: "chart.xyaxis.line")
+                            }
+                        
+                        Text("Historical")
+                            .tabItem { Label("Historical", systemImage: "clock.fill") }
+                    }
+                    .frame(height: 400)
                     
                         
                 }
