@@ -175,15 +175,18 @@ app.get("/insider-sentiment/:symbol", async (req, res) => {
 // Endpoint to fetch company peers from Finnhub
 app.get("/company-peers/:symbol", async (req, res) => {
 	try {
-		const symbol = req.params.symbol;
-		const apiUrl = `https://finnhub.io/api/v1/stock/peers?symbol=${symbol}&token=${FINNHUB_API_KEY}`;
-		const response = await axios.get(apiUrl);
-		res.json(response.data);
+	    const symbol = req.params.symbol;
+	    const apiUrl = `https://finnhub.io/api/v1/stock/peers?symbol=${symbol}&token=${FINNHUB_API_KEY}`;
+	    const response = await axios.get(apiUrl);
+	    const symbols = response.data;
+	    const filteredSymbols = symbols.filter(symbol => !symbol.includes('.'));
+	    res.json(filteredSymbols);
 	} catch (error) {
-		console.error("Error fetching company peers:", error);
-		res.status(500).json({ error: "Failed to fetch company peers" });
+	    console.error("Error fetching company peers:", error);
+	    res.status(500).json({ error: "Failed to fetch company peers" });
 	}
-});
+ });
+ 
 
 // TODO: set null values in the response object to 0
 // Endpoint to fetch company earnings from Finnhub
@@ -210,7 +213,7 @@ app.get("/stock-hourly-chart/:symbol", async (req, res) => {
 		const formattedEndDate = formatDate(currentDate);
 		// Get date from 1 day ago
 		const oneDayAgo = new Date(
-			currentDate.setDate(currentDate.getDate() - 1)
+			currentDate.setDate(currentDate.getDate() - 3)
 		);
 		// Format the start date in YYYY-MM-DD format
 		const formattedStartDate = formatDate(oneDayAgo);

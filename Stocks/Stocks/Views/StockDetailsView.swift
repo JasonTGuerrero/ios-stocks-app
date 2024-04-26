@@ -126,17 +126,18 @@ struct HistoricalStockChartWebView: UIViewRepresentable {
 }
 
 
-struct WebView: UIViewRepresentable {
-    let url: URL
-    
-    func makeUIView(context: Context) -> WKWebView  {
-        let wkwebView = WKWebView()
-        let request = URLRequest(url: url)
-        wkwebView.load(request)
-        return wkwebView
-    }
-    
-    func updateUIView(_ uiView: WKWebView, context: Context) {
+struct PillButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            .background(
+                Capsule()
+                    .fill(Color.green)
+            )
+            .foregroundColor(.white)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeInOut(duration: 0.1))
     }
 }
 
@@ -145,6 +146,7 @@ struct StockDetailsView: View {
     @State private var profileData: JSON? = nil
     @State private var quoteData: JSON? = nil
     @State private var hourlyChartData: JSON? = nil
+    @State private var companyPeers: JSON? = nil
     @State private var isFavorite: Bool = false
 
     
@@ -152,7 +154,8 @@ struct StockDetailsView: View {
         
         if (profileData == nil
             && quoteData == nil
-            && hourlyChartData == nil) {
+            && hourlyChartData == nil
+            && companyPeers == nil) {
             ProgressView {
                 Text("Fetching Data...")
             }
@@ -161,6 +164,7 @@ struct StockDetailsView: View {
                 fetchProfileData()
                 fetchQuoteData()
                 fetchHourlyChartData()
+                fetchCompanyPeers()
             }
         } else {
             NavigationView {
@@ -200,33 +204,202 @@ struct StockDetailsView: View {
                     .padding(.leading)
                     .padding(.top, 10)
                     TabView {
-                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: quoteData?["d"].doubleValue ?? -0.01)
-                            .frame(height: 350)
-                            .tabItem {
-                                Label("Hourly", systemImage: "chart.xyaxis.line")
-                            }
-                        
-                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
-                            .frame(height: 350)
-                            .tabItem { Label("Historical", systemImage: "clock.fill") }
+//                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: quoteData?["d"].doubleValue ?? 0.01)
+//                            .frame(height: 350)
+//                            .tabItem {
+//                                Label("Hourly", systemImage: "chart.xyaxis.line")
+//                            }
+//                        
+//                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
+//                            .frame(height: 350)
+//                            .tabItem {
+//                                Label("Historical", systemImage: "clock.fill")
+//                            }
                     }
                     .frame(height: 400)
+//                    .padding(.bottom, 20)
+                    
+                    VStack(alignment: .leading, content: {
+                        Text("Portfolio")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading)
+//                            .padding(.bottom)
+                            .font(.system(size: 26))
+                            
+                    })
+                    HStack {
+                        VStack {
+                            Text("You have 0 shares of \(tickerSymbol).")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.system(size: 16))
+                                .padding(.bottom, 0.01)
+                                .padding(.leading)
+                            Text("Start trading!")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.system(size: 16))
+                                .padding(.leading)
+                        }
+                        .frame(width: 215)
+                        VStack {
+                            Button("Trade") {
+                                
+                            }
+                            .padding(20)
+                            .frame(width: 150)
+                            .background(Color.green)
+                            .foregroundStyle(.white)
+                            .fontWeight(.bold)
+                            .clipShape(Capsule())
+                        }
+                        .padding(.leading)
+                        .padding(.trailing)
+                    }
+                    VStack(alignment: .leading, content: {
+                        Text("Stats")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading)
+                            .padding(.top)
+                            .font(.system(size: 26))
+                            
+                    })
+                    HStack {
+                        VStack(spacing: 0) {
+                            HStack {
+                                Text("High Price:")
+                                    .font(.system(size: 15))
+                                    .bold()
+                                Text("$"+String(format: "%.2f", quoteData?["h"].double ?? 0.0))
+                                    .padding(.trailing, 20)
+                                    .font(.system(size: 15))
+                                Text("Open Price:")
+                                    .font(.system(size: 15))
+                                    .bold()
+                                Text("$"+String(format: "%.2f", quoteData?["o"].double ?? 0.0))
+                                    .font(.system(size: 15)) // Set font size to 15
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                            .padding(.leading, 5)
+                            HStack {
+                                Text("Low Price:")
+                                    .font(.system(size: 15))
+                                    .bold()
+                                Text("$"+String(format: "%.2f", quoteData?["l"].double ?? 0.0))
+                                    .padding(.trailing, 24)
+                                    .font(.system(size: 15))
+                                Text("Prev. Close:")
+                                    .font(.system(size: 15))
+                                    .bold()
+                                Text("$"+String(format: "%.2f", quoteData?["pc"].double ?? 0.0))
+                                    .font(.system(size: 15))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading)
+                            .padding(.leading, 5)
+                        }
+                    }
+
+                    VStack(alignment: .leading, content: {
+                        Text("About")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading)
+                            .padding(.top)
+                            .padding(.bottom)
+                            .font(.system(size: 26))
+                            
+                    })
+                    VStack {
+                        HStack {
+                            Text("IPO Start Date:\t\t")
+                                .bold()
+                                .font(.system(size: 16))
+                            Text("\(profileData?["ipo"] ?? "")")
+                                .font(.system(size: 16))
+
+                            
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 30)
+                        .padding(.bottom, 0)
+                        
+                        HStack {
+                            Text("Industry:\t\t\t\t")
+                                .bold()
+                                .font(.system(size: 16))
+                            Text("\(profileData?["finnhubIndustry"] ?? "")")
+                                .font(.system(size: 16))
+
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 30)
+                        .padding(.top, 1)
+                        
+                        HStack {
+                            Text("Webpage:\t\t\t\t")
+                                .font(.system(size: 16))
+                                .bold()
+                            if let webURLString = profileData?["weburl"].string,
+                               let webURL = URL(string: webURLString) {
+                                Link(webURLString, destination: webURL)
+                                    .font(.system(size: 16))
+                            } else {
+                                Text("N/A")
+                            }
+                            
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 30)
+                        .padding(.top, 1)
+                        
+                        HStack {
+                            Text("Company Peers:\t\t")
+                                .font(.system(size: 16))
+
+                                .bold()
+                            ScrollView(.horizontal) {
+                                HStack {
+                                    if let companyPeers = companyPeers?.array {
+                                        ScrollView(.horizontal) {
+                                            HStack(spacing: 10) {
+                                                ForEach(0..<companyPeers.count, id: \.self) { index in
+                                                    if let peer = companyPeers[index].string {
+                                                        NavigationLink(destination: StockDetailsView(tickerSymbol: peer)) {
+                                                                   Text(peer + ",")
+                                                                    .font(.system(size: 16))
+                                                               }
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        Text("No company peers available")
+                                    }
+                                }
+
+                            }
+                            
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 30)
+                        .padding(.top, 0)
+                    }
+                    
                     
                         
                 }
 
             }
             .navigationTitle(tickerSymbol)
-            .navigationBarTitleDisplayMode(.large) // or .large
+            .navigationBarTitleDisplayMode(.large)
             .navigationBarItems(trailing:
                 Button(action: {
-                    // Action to perform when the button is tapped
                     isFavorite.toggle()
                 }) {
                     Image(systemName: isFavorite ? "plus.circle.fill" : "plus.circle")
                         .resizable()
-                        .aspectRatio(contentMode: .fit) // or .fill
-                        .frame(width: 24, height: 24) // Adjust the width and height as needed
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 24, height: 24)
                 }
             )
 
@@ -276,6 +449,21 @@ struct StockDetailsView: View {
 
             case .failure(let error):
                 print("Error fetching hourly stock data:", error)
+            }
+        }
+    }
+    
+    func fetchCompanyPeers() {
+        AF.request("\(url)/company-peers/\(tickerSymbol)").validate().responseJSON { response in
+            switch response.result {
+            case .success:
+                if let peersData = response.data {
+                    self.companyPeers = JSON(peersData)
+//                    print(self.companyPeers!)
+                }
+
+            case .failure(let error):
+                print("Error fetching company peers data:", error)
             }
         }
     }
