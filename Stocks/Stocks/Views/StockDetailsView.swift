@@ -141,12 +141,53 @@ struct PillButtonStyle: ButtonStyle {
     }
 }
 
+struct SocialSentimentsTableView: View {
+    let data: JSON
+    let companyName: String
+
+    var body: some View {
+        Grid(horizontalSpacing: 30, verticalSpacing: 15) {
+            // Header row
+            GridRow {
+                Text(companyName).fontWeight(.bold)
+                Text("MSPR").fontWeight(.bold)
+                Text("Change").fontWeight(.bold)
+            }
+            Divider()
+            // Total row
+            GridRow {
+                Text("Total").fontWeight(.bold)
+                Text(String(format: "%.2f", data["total_mspr"].double ?? 0))
+                Text(String(format: "%.2f", data["total_change"].double ?? 0))
+            }
+            Divider()
+            // Positive row
+            GridRow {
+                Text("Positive").fontWeight(.bold)
+                Text(String(format: "%.2f", data["positive_mspr"].double ?? 0))
+                Text(String(format: "%.2f", data["positive_change"].double ?? 0))
+            }
+            Divider()
+            // Negative row
+            GridRow {
+                Text("Negative").fontWeight(.bold)
+                Text(String(format: "%.2f", data["negative_mspr"].double ?? 0))
+                Text(String(format: "%.2f", data["negative_change"].double ?? 0))
+            }
+            Divider()
+        }
+        .padding()
+    }
+}
+
 struct StockDetailsView: View {
     let tickerSymbol: String
     @State private var profileData: JSON? = nil
     @State private var quoteData: JSON? = nil
     @State private var hourlyChartData: JSON? = nil
-    @State private var companyPeers: JSON? = nil
+    @State private var companyPeersData: JSON? = nil
+    @State private var socialSentimentsData: JSON? = nil
+    @State private var trendsData: JSON? = nil
     @State private var isFavorite: Bool = false
 
     
@@ -154,8 +195,9 @@ struct StockDetailsView: View {
         
         if (profileData == nil
             && quoteData == nil
-            && hourlyChartData == nil
-            && companyPeers == nil) {
+            && companyPeersData == nil
+            && socialSentimentsData == nil
+            && trendsData == nil) {
             ProgressView {
                 Text("Fetching Data...")
             }
@@ -163,8 +205,9 @@ struct StockDetailsView: View {
             .onAppear {
                 fetchProfileData()
                 fetchQuoteData()
-                fetchHourlyChartData()
-                fetchCompanyPeers()
+                fetchCompanyPeersData()
+                fetchSocialSentiments()
+                fetchTrendsData()
             }
         } else {
             NavigationView {
@@ -204,12 +247,14 @@ struct StockDetailsView: View {
                     .padding(.leading)
                     .padding(.top, 10)
                     TabView {
-//                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: quoteData?["d"].doubleValue ?? 0.01)
+//                        if let priceChange = quoteData?["d"].doubleValue {
+//                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
 //                            .frame(height: 350)
 //                            .tabItem {
 //                                Label("Hourly", systemImage: "chart.xyaxis.line")
 //                            }
-//                        
+//                        }
+//
 //                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
 //                            .frame(height: 350)
 //                            .tabItem {
@@ -358,7 +403,7 @@ struct StockDetailsView: View {
                                 .bold()
                             ScrollView(.horizontal) {
                                 HStack {
-                                    if let companyPeers = companyPeers?.array {
+                                    if let companyPeers = companyPeersData?.array {
                                         ScrollView(.horizontal) {
                                             HStack(spacing: 10) {
                                                 ForEach(0..<companyPeers.count, id: \.self) { index in
@@ -383,8 +428,30 @@ struct StockDetailsView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 30)
                         .padding(.top, 0)
-                    }
+
                     
+                        VStack(alignment: .leading, content: {
+                            Text("Insights")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.leading)
+                                .padding(.top)
+                                .font(.system(size: 26))
+                            
+                        })
+                        Text("Social Sentiments")
+                            .frame(alignment: .center)
+                            .font(.system(size: 24))
+                            .padding(.top)
+                        if let socialSentimentsData = self.socialSentimentsData {
+                            if let companyName = profileData?["name"].string {
+                                SocialSentimentsTableView(data: socialSentimentsData, companyName: companyName)
+                                    .frame(width: 400)
+                            }
+                        }
+                        StackColumnChartView()
+                            .frame(height: 300)
+                        
+                    }
                     
                         
                 }
@@ -405,6 +472,86 @@ struct StockDetailsView: View {
 
         }
         
+    }
+    
+
+    struct StackColumnChartView: UIViewRepresentable {
+//        let options: HIOptions
+        
+        func makeUIView(context: Context) -> HIChartView {
+            let chartView = HIChartView()
+
+            let options = HIOptions()
+
+            let chart = HIChart()
+            chart.type = "column"
+            options.chart = chart
+
+            let title = HITitle()
+            title.text = "Stacked column chart"
+            options.title = title
+
+            let xAxis = HIXAxis()
+            xAxis.categories = ["Apples", "Oranges", "Pears", "Grapes", "Bananas"]
+            options.xAxis = [xAxis]
+
+            let yAxis = HIYAxis()
+            yAxis.min = 0
+            yAxis.title = HITitle()
+            yAxis.title.text = "Total fruit consumption"
+            yAxis.stackLabels = HIStackLabels()
+            yAxis.stackLabels.enabled = true
+            yAxis.stackLabels.style = HICSSObject()
+            yAxis.stackLabels.style.fontWeight = "bold"
+            yAxis.stackLabels.style.color = "gray"
+            options.yAxis = [yAxis]
+
+            let legend = HILegend()
+            legend.align = "right"
+            legend.x = -30
+            legend.verticalAlign = "top"
+            legend.y = 25
+            legend.floating = true
+            legend.backgroundColor = HIColor(name: "white")
+            legend.borderColor = HIColor(hexValue: "CCC")
+            legend.borderWidth = 1
+            legend.shadow = HICSSObject()
+            legend.shadow.opacity = 0
+            options.legend = legend
+
+            let tooltip = HITooltip()
+            tooltip.headerFormat = "<b>{point.x}</b><br/>"
+            tooltip.pointFormat = "{series.name}: {point.y}<br/>Total: {point.stackTotal}"
+            options.tooltip = tooltip
+
+            let plotOptions = HIPlotOptions()
+            plotOptions.series = HISeries()
+            plotOptions.series.stacking = "normal"
+            let dataLabels = HIDataLabels()
+            dataLabels.enabled = true
+            plotOptions.series.dataLabels = [dataLabels]
+            options.plotOptions = plotOptions
+
+            let john = HIColumn()
+            john.name = "John"
+            john.data = [5, 3, 4, 7, 2]
+
+            let jane = HIColumn()
+            jane.name = "Jane"
+            jane.data = [2, 2, 3, 2, 1]
+
+            let joe = HIColumn()
+            joe.name = "Joe"
+            joe.data = [3, 4, 4, 2, 5]
+
+            options.series = [john, jane, joe]
+
+            chartView.options = options
+            return chartView
+        }
+        
+        func updateUIView(_ uiView: HIChartView, context: Context) {
+        }
     }
     
     
@@ -453,12 +600,12 @@ struct StockDetailsView: View {
         }
     }
     
-    func fetchCompanyPeers() {
+    func fetchCompanyPeersData() {
         AF.request("\(url)/company-peers/\(tickerSymbol)").validate().responseJSON { response in
             switch response.result {
             case .success:
                 if let peersData = response.data {
-                    self.companyPeers = JSON(peersData)
+                    self.companyPeersData = JSON(peersData)
 //                    print(self.companyPeers!)
                 }
 
@@ -467,6 +614,37 @@ struct StockDetailsView: View {
             }
         }
     }
+    
+    func fetchSocialSentiments() {
+        AF.request("\(url)/insider-sentiment/\(tickerSymbol)").validate().responseJSON { response in
+            switch response.result {
+            case .success:
+                if let socialSentimentsData = response.data {
+                    self.socialSentimentsData = JSON(socialSentimentsData)
+//                    print(self.socialSentimentsData!)
+                }
+
+            case .failure(let error):
+                print("Error fetching social sentiments data:", error)
+            }
+        }
+    }
+    
+    func fetchTrendsData() {
+        AF.request("\(url)/recommendation-trends/\(tickerSymbol)").validate().responseJSON { response in
+            switch response.result {
+            case .success:
+                if let trendsData = response.data {
+                    self.trendsData = JSON(trendsData)
+                    print(self.trendsData!)
+                }
+
+            case .failure(let error):
+                print("Error fetching recommendation trends data:", error)
+            }
+        }
+    }
+
 }
 
 #Preview {

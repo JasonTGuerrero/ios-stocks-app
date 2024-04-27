@@ -158,6 +158,41 @@ app.get("/recommendation-trends/:symbol", async (req, res) => {
 	}
 });
 
+function calculateAggregates(data) {
+	let totalMspr = 0;
+	let positiveMspr = 0;
+	let negativeMspr = 0;
+	let totalChange = 0;
+	let positiveChange = 0;
+	let negativeChange = 0;
+   
+	data.data.forEach(entry => {
+	  totalMspr += entry.mspr;
+	  totalChange += entry.change;
+   
+	  if (entry.mspr > 0) {
+	    positiveMspr += entry.mspr;
+	  } else {
+	    negativeMspr += entry.mspr;
+	  }
+   
+	  if (entry.change > 0) {
+	    positiveChange += entry.change;
+	  } else {
+	    negativeChange += entry.change;
+	  }
+	});
+   
+	return {
+	  total_mspr: totalMspr,
+	  positive_mspr: positiveMspr,
+	  negative_mspr: negativeMspr,
+	  total_change: totalChange,
+	  positive_change: positiveChange,
+	  negative_change: negativeChange
+	};
+   }
+
 // Endpoint to fetch insider sentiment from Finnhub
 app.get("/insider-sentiment/:symbol", async (req, res) => {
 	try {
@@ -165,7 +200,9 @@ app.get("/insider-sentiment/:symbol", async (req, res) => {
 		const fromDate = "2022-01-01"; // Default from date
 		const apiUrl = `https://finnhub.io/api/v1/stock/insider-sentiment?symbol=${symbol}&from=${fromDate}&token=${FINNHUB_API_KEY}`;
 		const response = await axios.get(apiUrl);
-		res.json(response.data);
+		const aggregatedData = calculateAggregates(response.data);
+		// console.log("aggregated data:", aggregatedData);
+		res.json(aggregatedData);
 	} catch (error) {
 		console.error("Error fetching insider sentiment:", error);
 		res.status(500).json({ error: "Failed to fetch insider sentiment" });
