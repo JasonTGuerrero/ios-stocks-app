@@ -146,18 +146,28 @@ app.get("/company-news/:symbol", async (req, res) => {
 // Endpoint to fetch company recommendation trends from Finnhub
 app.get("/recommendation-trends/:symbol", async (req, res) => {
 	try {
-		const symbol = req.params.symbol;
-		const apiUrl = `https://finnhub.io/api/v1/stock/recommendation?symbol=${symbol}&token=${FINNHUB_API_KEY}`;
-		const response = await axios.get(apiUrl);
-		res.json(response.data);
+	    const symbol = req.params.symbol;
+	    const apiUrl = `https://finnhub.io/api/v1/stock/recommendation?symbol=${symbol}&token=${FINNHUB_API_KEY}`;
+	    const response = await axios.get(apiUrl);
+ 
+	    // Modify the date format in the response data
+	    const modifiedData = response.data.map(item => {
+		   // Extract the year and month from the period
+		   const [year, month] = item.period.split('-');
+		   // Concatenate the year and month with a dash
+		   item.period = `${year}-${month}`;
+		   return item;
+	    });
+ 
+	    res.json(modifiedData);
 	} catch (error) {
-		console.error("Error fetching recommendation trends:", error);
-		res.status(500).json({
-			error: "Failed to fetch recommendation trends",
-		});
+	    console.error("Error fetching recommendation trends:", error);
+	    res.status(500).json({
+		   error: "Failed to fetch recommendation trends",
+	    });
 	}
-});
-
+ });
+ 
 function calculateAggregates(data) {
 	let totalMspr = 0;
 	let positiveMspr = 0;
@@ -224,6 +234,22 @@ app.get("/company-peers/:symbol", async (req, res) => {
 	}
  });
  
+ function handleNullValues(earningsData) {
+	// Iterate through each earnings object in the data array
+	for (let i = 0; i < earningsData.length; i++) {
+	    const earnings = earningsData[i];
+ 
+	    // Check each key in the earnings object
+	    for (const key in earnings) {
+		   // If the value is null, set it to 0
+		   if (earnings[key] === null) {
+			  earnings[key] = 0;
+		   }
+	    }
+	}
+	return earningsData;
+ }
+ 
 
 // TODO: set null values in the response object to 0
 // Endpoint to fetch company earnings from Finnhub
@@ -234,7 +260,9 @@ app.get("/company-earnings/:symbol", async (req, res) => {
 		const response = await axios.get(apiUrl);
 
 		// Directly send the earnings data
-		res.json(response.data);
+		// console.log(response.data);
+		const handledData = handleNullValues(response.data);
+		res.json(handledData);
 	} catch (error) {
 		console.error("Error fetching company earnings:", error);
 		res.status(500).json({ error: "Failed to fetch company earnings" });

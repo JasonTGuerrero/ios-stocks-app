@@ -180,6 +180,7 @@ struct SocialSentimentsTableView: View {
     }
 }
 
+
 struct StockDetailsView: View {
     let tickerSymbol: String
     @State private var profileData: JSON? = nil
@@ -188,6 +189,7 @@ struct StockDetailsView: View {
     @State private var companyPeersData: JSON? = nil
     @State private var socialSentimentsData: JSON? = nil
     @State private var trendsData: JSON? = nil
+    @State private var earningsData: JSON? = nil
     @State private var isFavorite: Bool = false
 
     
@@ -197,7 +199,8 @@ struct StockDetailsView: View {
             && quoteData == nil
             && companyPeersData == nil
             && socialSentimentsData == nil
-            && trendsData == nil) {
+            && trendsData == nil
+            && earningsData == nil) {
             ProgressView {
                 Text("Fetching Data...")
             }
@@ -208,6 +211,7 @@ struct StockDetailsView: View {
                 fetchCompanyPeersData()
                 fetchSocialSentiments()
                 fetchTrendsData()
+                fetchEarningsData()
             }
         } else {
             NavigationView {
@@ -448,9 +452,18 @@ struct StockDetailsView: View {
                                     .frame(width: 400)
                             }
                         }
-                        StackColumnChartView()
-                            .frame(height: 300)
+
+                        if let trendsData = self.trendsData {
+                            recommendationTrendsView(recommendationTrendsData: trendsData)
+                                .frame(height: 400)
+                                .padding(.top, 55)
+                        }
                         
+                        if let companyEarningsData = self.earningsData {
+                            companyEarningsView(companyEarningsData: companyEarningsData)
+                                .frame(height: 430)
+                                .padding(.top, 55)
+                        }
                     }
                     
                         
@@ -474,9 +487,100 @@ struct StockDetailsView: View {
         
     }
     
+    struct companyEarningsView: UIViewRepresentable {
+        let companyEarningsData: JSON
+        
+        func makeUIView(context: Context) -> some UIView {
+            var actuals: [[Any]] = []
+            var estimates: [[Any]] = []
+            var periods: [String] = []
+            var surprises: [String] = []
+            var combinedLabels: [String] = []
+            for datum in companyEarningsData {
+                var actualPair: [Any] = []
+                var estimatePair: [Any] = []
+                actualPair = ["Surprise: " + datum.1["surprise"].stringValue, datum.1["actual"].doubleValue]
+                estimatePair = [datum.1["period"].stringValue, datum.1["estimate"].doubleValue]
+                actuals.append(actualPair)
+                estimates.append(estimatePair)
+                periods.append(datum.1["period"].stringValue)
+                surprises.append("Surprise: " + datum.1["surprise"].stringValue)
+                combinedLabels.append(datum.1["period"].stringValue + "<br/>" + "Surprise: " + datum.1["surprise"].stringValue)
+            }
+            print(actuals)
+            print(estimates)
+            print(combinedLabels)
+            let chartView = HIChartView()
 
-    struct StackColumnChartView: UIViewRepresentable {
-//        let options: HIOptions
+            
+            let estimateSeries = HISpline()
+            estimateSeries.data = estimates
+            estimateSeries.name = "Estimate"
+            estimateSeries.marker = HIMarker()
+            estimateSeries.xAxis = 0
+
+            
+            let actualSeries = HISpline()
+            actualSeries.data = actuals
+            actualSeries.marker = HIMarker()
+            actualSeries.name = "Actual"
+//            actualSeries.xAxis = 0
+            
+            let periodAxis = HIXAxis()
+            periodAxis.categories = periods
+            let surprisesAxis = HIXAxis()
+            surprisesAxis.categories = surprises
+            let combinedAxis = HIXAxis()
+            combinedAxis.categories = combinedLabels
+            combinedAxis.labels = HILabels()
+            combinedAxis.labels.rotation = -45
+
+            let options = HIOptions()
+            options.xAxis = [combinedAxis]
+            options.series = [actualSeries, estimateSeries]
+
+            let chart = HIChart()
+            chart.type = "spline"
+            options.chart = chart
+
+            let title = HITitle()
+            title.text = "Historical EPS Surprises"
+            options.title = title
+
+
+            let yAxis = HIYAxis()
+            yAxis.title = HITitle()
+            yAxis.title.text = "Quarterly EPS"
+            options.yAxis = [yAxis]
+
+            let legend = HILegend()
+            legend.enabled = true
+            options.legend = legend
+            
+            
+            let tooltip = HITooltip()
+            tooltip.headerFormat = "{point.x}<br/>"
+            tooltip.shared = true
+            options.tooltip = tooltip
+            
+
+            let plotOptions = HIPlotOptions()
+            plotOptions.spline = HISpline()
+            plotOptions.spline.marker = HIMarker()
+            plotOptions.spline.marker.enabled = true
+            options.plotOptions = plotOptions
+
+            chartView.options = options
+            return chartView
+        }
+        
+        func updateUIView(_ uiView: UIViewType, context: Context) {
+        }
+    }
+    
+
+    struct recommendationTrendsView: UIViewRepresentable {
+        let recommendationTrendsData: JSON
         
         func makeUIView(context: Context) -> HIChartView {
             let chartView = HIChartView()
@@ -488,28 +592,43 @@ struct StockDetailsView: View {
             options.chart = chart
 
             let title = HITitle()
-            title.text = "Stacked column chart"
+            title.text = "Recommendation Trends"
             options.title = title
 
             let xAxis = HIXAxis()
-            xAxis.categories = ["Apples", "Oranges", "Pears", "Grapes", "Bananas"]
+            var xCategories: [String] = []
+            var buys: [Int] = []
+            var sells: [Int] = []
+            var strongBuys: [Int] = []
+            var strongSells: [Int] = []
+            var holds: [Int] = []
+            for trend in recommendationTrendsData {
+                xCategories.append(trend.1["period"].stringValue)
+                buys.append(trend.1["buy"].intValue)
+                sells.append(trend.1["sell"].intValue)
+                strongBuys.append(trend.1["strongBuy"].intValue)
+                strongSells.append(trend.1["strongSell"].intValue)
+                holds.append(trend.1["hold"].intValue)
+            }
+            xAxis.categories = xCategories
             options.xAxis = [xAxis]
 
             let yAxis = HIYAxis()
             yAxis.min = 0
             yAxis.title = HITitle()
-            yAxis.title.text = "Total fruit consumption"
+            yAxis.title.text = "#Analysis"
             yAxis.stackLabels = HIStackLabels()
-            yAxis.stackLabels.enabled = true
+            yAxis.stackLabels.enabled = false
             yAxis.stackLabels.style = HICSSObject()
             yAxis.stackLabels.style.fontWeight = "bold"
             yAxis.stackLabels.style.color = "gray"
+            yAxis.tickInterval = 20
             options.yAxis = [yAxis]
 
             let legend = HILegend()
             legend.align = "right"
             legend.x = -30
-            legend.verticalAlign = "top"
+            legend.verticalAlign = "bottom"
             legend.y = 25
             legend.floating = true
             legend.backgroundColor = HIColor(name: "white")
@@ -517,11 +636,10 @@ struct StockDetailsView: View {
             legend.borderWidth = 1
             legend.shadow = HICSSObject()
             legend.shadow.opacity = 0
-            options.legend = legend
 
             let tooltip = HITooltip()
             tooltip.headerFormat = "<b>{point.x}</b><br/>"
-            tooltip.pointFormat = "{series.name}: {point.y}<br/>Total: {point.stackTotal}"
+            tooltip.pointFormat = "{series.name}: {point.y}<br/>"
             options.tooltip = tooltip
 
             let plotOptions = HIPlotOptions()
@@ -531,6 +649,31 @@ struct StockDetailsView: View {
             dataLabels.enabled = true
             plotOptions.series.dataLabels = [dataLabels]
             options.plotOptions = plotOptions
+            
+            let buy = HIColumn()
+            buy.name = "Buy"
+            buy.data = buys
+            buy.color = HIColor(hexValue: "1DB954")
+            
+            let strongBuy = HIColumn()
+            strongBuy.name = "Strong Buy"
+            strongBuy.data = strongBuys
+            strongBuy.color = HIColor(hexValue: "176F38")
+            
+            let sell = HIColumn()
+            sell.name = "Sell"
+            sell.data = sells
+            sell.color = HIColor(hexValue: "F45B5B")
+            
+            let strongSell = HIColumn()
+            strongSell.name = "Strong Sell"
+            strongSell.data = strongSells
+            strongSell.color = HIColor(hexValue: "813131")
+            
+            let hold = HIColumn()
+            hold.name = "Hold"
+            hold.data = holds
+            hold.color = HIColor(hexValue: "B98B1D")
 
             let john = HIColumn()
             john.name = "John"
@@ -544,7 +687,7 @@ struct StockDetailsView: View {
             joe.name = "Joe"
             joe.data = [3, 4, 4, 2, 5]
 
-            options.series = [john, jane, joe]
+            options.series = [strongBuy, buy, hold, sell, strongSell]
 
             chartView.options = options
             return chartView
@@ -636,11 +779,26 @@ struct StockDetailsView: View {
             case .success:
                 if let trendsData = response.data {
                     self.trendsData = JSON(trendsData)
-                    print(self.trendsData!)
+//                    print(self.trendsData!)
                 }
 
             case .failure(let error):
                 print("Error fetching recommendation trends data:", error)
+            }
+        }
+    }
+    
+    func fetchEarningsData() {
+        AF.request("\(url)/company-earnings/\(tickerSymbol)").validate().responseJSON { response in
+            switch response.result {
+            case .success:
+                if let earningsData = response.data {
+                    self.earningsData = JSON(earningsData)
+//                    print(self.earningsData!)
+                }
+
+            case .failure(let error):
+                print("Error fetching company earnings data:", error)
             }
         }
     }
