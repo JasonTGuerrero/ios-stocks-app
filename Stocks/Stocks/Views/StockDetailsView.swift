@@ -475,11 +475,12 @@ struct StockDetailsView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.leading)
                             .padding(.top)
-                            .padding(.bottom, -55)
+//                            .padding(.bottom, -55)
 
                             
                         if let newsData = self.newsData {
                             CompanyNewsView(newsData: newsData.arrayValue)
+                            
                         }
 
                     }
@@ -505,17 +506,62 @@ struct StockDetailsView: View {
         
     }
     
+    struct NewsSheetView: View {
+        let newsObject: JSON
+        
+        var body: some View {
+//            Text("\(newsObject["summary"])")
+            ScrollView {
+                Text("\(todayDate())")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 15)
+//                    .padding(.top, 2)
+                Divider()
+                    .padding(.top, 10)
+                Text("\(newsObject["headline"])")
+                    .font(.system(size: 20))
+                    .fontWeight(.bold)
+//                    .padding(.horizontal, 2)
+                Text("\(newsObject["summary"]) [...]")
+                    .padding(.horizontal, 5)
+                HStack {
+                    Text("For more details click")
+                    Link("here", destination: URL(string: newsObject["url"].stringValue)!)
+                        .foregroundColor(.blue)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 5)
+                .foregroundColor(.secondary)
+            }
+        }
+        
+        func todayDate() -> String {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMMM dd, yyyy"
+            return dateFormatter.string(from: Date())
+        }
+    }
+    
     struct CompanyNewsView: View {
         let newsData: [JSON]
+        @State private var isSelected: [Bool]
+        
+        init(newsData: [JSON]) {
+            self.newsData = newsData
+            self._isSelected = State(initialValue: Array(repeating: false, count: newsData.count))
+        }
         
         var body: some View {
             Group {
                 KFImage(URL(string: "\(newsData[0]["image"])"))
                     .resizable()
-                    .cornerRadius(10)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 360, height: 360)
-                    .padding(.bottom, -35)
+                    .aspectRatio(1, contentMode: .fill)
+                    .frame(width: 370, height: 220)
+                    .padding(.bottom, 15)
+                    .cornerRadius(20)
+                    .clipped()
                 VStack {
                     HStack {
                         Text("\(newsData[0]["source"])")
@@ -531,8 +577,10 @@ struct StockDetailsView: View {
                     .padding(.leading, 18)
                     Text("\(newsData[0]["headline"])")
                         .fontWeight(.bold)
+                        .padding(.horizontal, 10)
 //                        .padding(.top, 0.1)
                 }
+                .padding(.top, 5)
                 Divider()
                     .padding(.bottom, 2)
             }
@@ -566,12 +614,38 @@ struct StockDetailsView: View {
                             .clipped()
                     }
                 }
+                .onTapGesture {
+                    isSelected[index].toggle()
+                }
+                .sheet(isPresented: $isSelected[index], content: {
+                    NavigationView {
+                            NewsSheetView(newsObject: newsData[index])
+                                .navigationBarItems(trailing:
+                                    Button(action: {
+                                        isSelected[index].toggle()
+                                    }) {
+                                        Image(systemName: "xmark")
+                                            .foregroundColor(.black)
+                                            .font(.headline)
+                                            .padding(8)
+                                    }
+                                )
+                                .navigationBarTitle("\(newsData[index]["source"])")
+                                .font(.subheadline)
+                        }
+                })
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.horizontal, 15)
                 .padding(.top, 5)
             }
 
             
+        }
+        
+        func todayDate() -> String {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMMM dd, yyyy"
+            return dateFormatter.string(from: Date())
         }
         
         func timeSince(from epochTime: TimeInterval) -> String {
