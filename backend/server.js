@@ -6,7 +6,6 @@ const { MongoClient } = require("mongodb");
 const app = express();
 app.use(cors());
 app.use(express.json());
-// app.use(express.static(path.join(__dirname, "dist", "frontend", "browser")));
 
 // Replace the uri string with your connection string.
 const uri =
@@ -136,12 +135,21 @@ app.get("/company-news/:symbol", async (req, res) => {
 		const toDate = today.toISOString().split("T")[0]; // Today's date
 		const apiUrl = `https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=${fromDate}&to=${toDate}&token=${FINNHUB_API_KEY}`;
 		const response = await axios.get(apiUrl);
-		res.json(response.data);
+		
+		// Filter out objects with empty strings for the "image" key
+		const filteredData = response.data.filter(item => item.image !== "");
+
+		// Get the last 20 objects
+		const last20Data = filteredData.slice(-20);
+		
+		res.json(last20Data);
 	} catch (error) {
 		console.error("Error fetching company news:", error);
 		res.status(500).json({ error: "Failed to fetch company news" });
 	}
 });
+
+
 
 // Endpoint to fetch company recommendation trends from Finnhub
 app.get("/recommendation-trends/:symbol", async (req, res) => {
@@ -251,7 +259,6 @@ app.get("/company-peers/:symbol", async (req, res) => {
  }
  
 
-// TODO: set null values in the response object to 0
 // Endpoint to fetch company earnings from Finnhub
 app.get("/company-earnings/:symbol", async (req, res) => {
 	try {

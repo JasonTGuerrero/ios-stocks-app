@@ -9,9 +9,11 @@ import SwiftUI
 import SwiftyJSON
 import Alamofire
 import Highcharts
+import Kingfisher
 import SwiftUI
 import UIKit
 import WebKit
+import Foundation
 
 struct HourlyStockChartWebView: UIViewRepresentable {
     let tickerSymbol: String
@@ -190,6 +192,7 @@ struct StockDetailsView: View {
     @State private var socialSentimentsData: JSON? = nil
     @State private var trendsData: JSON? = nil
     @State private var earningsData: JSON? = nil
+    @State private var newsData: JSON? = nil
     @State private var isFavorite: Bool = false
 
     
@@ -200,7 +203,8 @@ struct StockDetailsView: View {
             && companyPeersData == nil
             && socialSentimentsData == nil
             && trendsData == nil
-            && earningsData == nil) {
+            && earningsData == nil
+            && newsData == nil) {
             ProgressView {
                 Text("Fetching Data...")
             }
@@ -212,6 +216,7 @@ struct StockDetailsView: View {
                 fetchSocialSentiments()
                 fetchTrendsData()
                 fetchEarningsData()
+                fetchNewsData()
             }
         } else {
             NavigationView {
@@ -464,6 +469,19 @@ struct StockDetailsView: View {
                                 .frame(height: 430)
                                 .padding(.top, 55)
                         }
+                        
+                        Text("News")
+                            .font(.system(size: 26))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading)
+                            .padding(.top)
+                            .padding(.bottom, -55)
+
+                            
+                        if let newsData = self.newsData {
+                            CompanyNewsView(newsData: newsData.arrayValue)
+                        }
+
                     }
                     
                         
@@ -487,6 +505,101 @@ struct StockDetailsView: View {
         
     }
     
+    struct CompanyNewsView: View {
+        let newsData: [JSON]
+        
+        var body: some View {
+            Group {
+                KFImage(URL(string: "\(newsData[0]["image"])"))
+                    .resizable()
+                    .cornerRadius(10)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 360, height: 360)
+                    .padding(.bottom, -35)
+                VStack {
+                    HStack {
+                        Text("\(newsData[0]["source"])")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .fontWeight(.bold)
+                        +
+                        Text("  \(timeSince(from: newsData[0]["datetime"].doubleValue))")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 18)
+                    Text("\(newsData[0]["headline"])")
+                        .fontWeight(.bold)
+//                        .padding(.top, 0.1)
+                }
+                Divider()
+                    .padding(.bottom, 2)
+            }
+            HStack {
+                VStack {
+                    HStack {
+                        Text("\(newsData[1]["source"])")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .fontWeight(.bold)
+                        +
+                        Text("  \(timeSince(from: newsData[1]["datetime"].doubleValue))")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 1)
+                    Text("\(newsData[1]["headline"])")
+                        .fontWeight(.bold)
+                }
+                VStack {
+                    KFImage(URL(string: "\(newsData[1]["image"])"))
+                        .resizable()
+                        .cornerRadius(10)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 100, height: 100)
+                }
+            }
+            .padding(.horizontal, 12)
+            
+        }
+        
+        func timeSince(from epochTime: TimeInterval) -> String {
+            let currentDate = Date()
+            let epochDate = Date(timeIntervalSince1970: epochTime)
+            let interval = currentDate.timeIntervalSince(epochDate)
+            
+            let hours = Int(interval / 3600)
+            let minutes = Int((interval.truncatingRemainder(dividingBy: 3600)) / 60)
+            
+            var timeString = ""
+            
+            if hours > 0 {
+                timeString += "\(hours) hr"
+            }
+            
+            if minutes > 0 {
+                timeString += ", \(minutes) min"
+            }
+            
+            return timeString
+        }
+    }
+    
+    struct NewsView: UIViewRepresentable {
+        let newsData: JSON
+        
+        func makeUIView(context: Context) -> some UIView {
+//            print("newsData: ", newsData)
+            print("image:", newsData[0]["image"])
+            return UIView()
+        }
+        
+        func updateUIView(_ uiView: UIViewType, context: Context) {
+        }
+    }
+    
     struct companyEarningsView: UIViewRepresentable {
         let companyEarningsData: JSON
         
@@ -507,11 +620,7 @@ struct StockDetailsView: View {
                 surprises.append("Surprise: " + datum.1["surprise"].stringValue)
                 combinedLabels.append(datum.1["period"].stringValue + "<br/>" + "Surprise: " + datum.1["surprise"].stringValue)
             }
-            print(actuals)
-            print(estimates)
-            print(combinedLabels)
             let chartView = HIChartView()
-
             
             let estimateSeries = HISpline()
             estimateSeries.data = estimates
@@ -795,6 +904,21 @@ struct StockDetailsView: View {
                 if let earningsData = response.data {
                     self.earningsData = JSON(earningsData)
 //                    print(self.earningsData!)
+                }
+
+            case .failure(let error):
+                print("Error fetching company earnings data:", error)
+            }
+        }
+    }
+    
+    func fetchNewsData() {
+        AF.request("\(url)/company-news/\(tickerSymbol)").validate().responseJSON { response in
+            switch response.result {
+            case .success:
+                if let newsData = response.data {
+                    self.newsData = JSON(newsData)
+                    print(self.newsData!)
                 }
 
             case .failure(let error):
