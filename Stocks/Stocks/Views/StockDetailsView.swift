@@ -536,32 +536,41 @@ struct StockDetailsView: View {
                 Divider()
                     .padding(.bottom, 2)
             }
-            HStack {
-                VStack {
-                    HStack {
-                        Text("\(newsData[1]["source"])")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+            ForEach(1..<newsData.count, id: \.self) { index in
+                HStack {
+                    VStack {
+                        HStack {
+                            Text("\(newsData[index]["source"])")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .fontWeight(.bold)
+                            +
+                            Text("  \(timeSince(from: newsData[index]["datetime"].doubleValue))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 1)
+                        Text("\(newsData[index]["headline"])")
                             .fontWeight(.bold)
-                        +
-                        Text("  \(timeSince(from: newsData[1]["datetime"].doubleValue))")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .frame(alignment: .leading)
+                            .padding(.leading, 0)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 1)
-                    Text("\(newsData[1]["headline"])")
-                        .fontWeight(.bold)
+                    Spacer()
+                    VStack {
+                        KFImage(URL(string: "\(newsData[index]["image"])"))
+                                .resizable()
+                                .cornerRadius(10)
+                                .aspectRatio(1, contentMode: .fill)
+                                .frame(width: 100, height: 100)
+                            .clipped()
+                    }
                 }
-                VStack {
-                    KFImage(URL(string: "\(newsData[1]["image"])"))
-                        .resizable()
-                        .cornerRadius(10)
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 100, height: 100)
-                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.horizontal, 15)
+                .padding(.top, 5)
             }
-            .padding(.horizontal, 12)
+
             
         }
         
