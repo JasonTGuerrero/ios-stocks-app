@@ -140,7 +140,7 @@ app.get("/company-news/:symbol", async (req, res) => {
 		const filteredData = response.data.filter(item => item.image !== "");
 
 		// Get the last 20 objects
-		const last20Data = filteredData.slice(-20);
+		const last20Data = filteredData.slice(0, 20);
 		
 		res.json(last20Data);
 	} catch (error) {

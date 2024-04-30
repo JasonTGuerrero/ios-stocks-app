@@ -18,7 +18,6 @@ import Foundation
 struct HourlyStockChartWebView: UIViewRepresentable {
     let tickerSymbol: String
     let priceChange: Double
-//    private let webView = WKWebView()
     
 
     func makeUIView(context: Context) -> WKWebView {
@@ -29,7 +28,6 @@ struct HourlyStockChartWebView: UIViewRepresentable {
         guard let htmlFilePath = Bundle.main.url(forResource: "hourly", withExtension: "html") else {
             fatalError("HTML file not found")
         }
-//        print("HTML file URL:", htmlFilePath)
 
         do {
             // Read the contents of the HTML file as a String
@@ -39,7 +37,6 @@ struct HourlyStockChartWebView: UIViewRepresentable {
             let modifiedHTMLString = htmlString
                 .replacingOccurrences(of: "{-tickerSymbol-}", with: tickerSymbol)
                 .replacingOccurrences(of: "{-priceChange-}", with: String(format: "%.2f", priceChange))
-//            print("Modified HTML content:", modifiedHTMLString)
 
             // Load the modified HTML content into WKWebView
             webView.loadHTMLString(modifiedHTMLString, baseURL: htmlFilePath)
@@ -73,8 +70,6 @@ struct HourlyStockChartWebView: UIViewRepresentable {
 
 struct HistoricalStockChartWebView: UIViewRepresentable {
     let tickerSymbol: String
-//    let priceChange: Double
-//    private let webView = WKWebView()
     
 
     func makeUIView(context: Context) -> WKWebView {
@@ -85,7 +80,6 @@ struct HistoricalStockChartWebView: UIViewRepresentable {
         guard let htmlFilePath = Bundle.main.url(forResource: "historical", withExtension: "html") else {
             fatalError("HTML file not found")
         }
-//        print("HTML file URL:", htmlFilePath)
 
         do {
             // Read the contents of the HTML file as a String
@@ -94,7 +88,6 @@ struct HistoricalStockChartWebView: UIViewRepresentable {
             // Replace occurrences of '{tickerSymbol}' and '{priceChange}' with actual values
             let modifiedHTMLString = htmlString
                 .replacingOccurrences(of: "{-tickerSymbol-}", with: tickerSymbol)
-//                .replacingOccurrences(of: "{-priceChange-}", with: String(format: "%.2f", priceChange))
             print("Modified hist HTML content:", modifiedHTMLString)
 
             // Load the modified HTML content into WKWebView
@@ -123,7 +116,6 @@ struct HistoricalStockChartWebView: UIViewRepresentable {
             self.tickerSymbol = tickerSymbol
         }
 
-        // Implement WKNavigationDelegate methods if needed
     }
 }
 
@@ -256,28 +248,26 @@ struct StockDetailsView: View {
                     .padding(.leading)
                     .padding(.top, 10)
                     TabView {
-                        if let priceChange = quoteData?["d"].doubleValue {
-                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
-                            .frame(height: 350)
-                            .tabItem {
-                                Label("Hourly", systemImage: "chart.xyaxis.line")
-                            }
-                        }
-
-                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
-                            .frame(height: 350)
-                            .tabItem {
-                                Label("Historical", systemImage: "clock.fill")
-                            }
+//                        if let priceChange = quoteData?["d"].doubleValue {
+//                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
+//                            .frame(height: 350)
+//                            .tabItem {
+//                                Label("Hourly", systemImage: "chart.xyaxis.line")
+//                            }
+//                        }
+//
+//                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
+//                            .frame(height: 350)
+//                            .tabItem {
+//                                Label("Historical", systemImage: "clock.fill")
+//                            }
                     }
                     .frame(height: 400)
-//                    .padding(.bottom, 20)
                     
                     VStack(alignment: .leading, content: {
                         Text("Portfolio")
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.leading)
-//                            .padding(.bottom)
                             .font(.system(size: 26))
                             
                     })
@@ -475,7 +465,6 @@ struct StockDetailsView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.leading)
                             .padding(.top)
-//                            .padding(.bottom, -55)
 
                             
                         if let newsData = self.newsData {
@@ -618,12 +607,14 @@ struct StockDetailsView: View {
                             .foregroundColor(.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 18)
+                    .padding(.leading, 9)
                     Text("\(newsData[0]["headline"])")
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .fontWeight(.bold)
                         .padding(.horizontal, 10)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.leading, 2)
                 .padding(.top, 5)
                 Divider()
                     .padding(.bottom, 2)
