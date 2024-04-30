@@ -211,7 +211,7 @@ struct StockDetailsView: View {
                 fetchNewsData()
             }
         } else {
-            NavigationView {
+            VStack {
                 ScrollView {
                     if let companyName = profileData?["name"].string {
                         Text(companyName)
@@ -231,6 +231,7 @@ struct StockDetailsView: View {
                             Text("$" + String(format: "%.2f", stockPrice))
                                 .font(.system(size: 32))
                                 .fontWeight(.semibold)
+                                .padding(.trailing, 4)
                             Image(systemName: arrowSymbol)
                                 .foregroundColor(arrowColor)
                                 .font(.system(size: 24))
@@ -416,9 +417,10 @@ struct StockDetailsView: View {
                                                 }
                                             }
                                         }
-                                    } else {
-                                        Text("No company peers available")
                                     }
+//                                    else {
+//                                        Text("No company peers available")
+//                                    }
                                 }
 
                             }
