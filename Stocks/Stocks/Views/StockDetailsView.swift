@@ -256,19 +256,19 @@ struct StockDetailsView: View {
                     .padding(.leading)
                     .padding(.top, 10)
                     TabView {
-//                        if let priceChange = quoteData?["d"].doubleValue {
-//                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
-//                            .frame(height: 350)
-//                            .tabItem {
-//                                Label("Hourly", systemImage: "chart.xyaxis.line")
-//                            }
-//                        }
-//
-//                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
-//                            .frame(height: 350)
-//                            .tabItem {
-//                                Label("Historical", systemImage: "clock.fill")
-//                            }
+                        if let priceChange = quoteData?["d"].doubleValue {
+                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
+                            .frame(height: 350)
+                            .tabItem {
+                                Label("Hourly", systemImage: "chart.xyaxis.line")
+                            }
+                        }
+
+                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
+                            .frame(height: 350)
+                            .tabItem {
+                                Label("Historical", systemImage: "clock.fill")
+                            }
                     }
                     .frame(height: 400)
 //                    .padding(.bottom, 20)
@@ -508,22 +508,22 @@ struct StockDetailsView: View {
     
     struct NewsSheetView: View {
         let newsObject: JSON
+
         
         var body: some View {
-//            Text("\(newsObject["summary"])")
             ScrollView {
-                Text("\(todayDate())")
+                Text("\(formatDate(from: newsObject["datetime"].doubleValue))")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
-//                    .padding(.top, 2)
                 Divider()
                     .padding(.top, 10)
                 Text("\(newsObject["headline"])")
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .font(.system(size: 20))
                     .fontWeight(.bold)
-//                    .padding(.horizontal, 2)
+                    .padding(.horizontal, 5)
                 Text("\(newsObject["summary"]) [...]")
                     .padding(.horizontal, 5)
                 HStack {
@@ -534,8 +534,52 @@ struct StockDetailsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 5)
                 .foregroundColor(.secondary)
+                HStack {
+                    Button(action: {
+                        // Open Twitter sharing link in Safari
+                        if let articleUrl = URL(string: "https://twitter.com/intent/tweet?text=\(newsObject["headline"].stringValue)?url=\(newsObject["url"].stringValue)") {
+                            UIApplication.shared.open(articleUrl)
+                        }
+                    }) {
+                        Image("x_logo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50, height: 50)
+                    }
+                    Button(action: {
+                        // Open Facebook sharing link in Safari
+                        if let articleUrl = URL(string: "https://www.facebook.com/sharer/sharer.php?u=\(newsObject["url"].stringValue)") {
+                            UIApplication.shared.open(articleUrl)
+                        }
+                    }) {
+                        Image("f_logo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50, height: 50)
+                    }
+                    
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 10)
             }
         }
+        
+        func formatDate(from timestamp: TimeInterval) -> String {
+            // Convert Unix epoch timestamp to Date
+            let date = Date(timeIntervalSince1970: timestamp)
+            
+            // Create a DateFormatter instance
+            let dateFormatter = DateFormatter()
+            
+            // Set the date format
+            dateFormatter.dateFormat = "MMMM dd, yyyy"
+            
+            // Convert Date to String
+            let dateString = dateFormatter.string(from: date)
+            
+            return dateString
+        }
+
         
         func todayDate() -> String {
             let dateFormatter = DateFormatter()
@@ -578,17 +622,37 @@ struct StockDetailsView: View {
                     Text("\(newsData[0]["headline"])")
                         .fontWeight(.bold)
                         .padding(.horizontal, 10)
-//                        .padding(.top, 0.1)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 5)
                 Divider()
                     .padding(.bottom, 2)
             }
+            .onTapGesture {
+                isSelected[0].toggle()
+            }
+            .sheet(isPresented: $isSelected[0], content: {
+                NavigationView {
+                        NewsSheetView(newsObject: newsData[0])
+                            .navigationBarItems(trailing:
+                                Button(action: {
+                                    isSelected[0].toggle()
+                                }) {
+                                    Image(systemName: "xmark")
+                                        .foregroundColor(.black)
+                                        .font(.headline)
+                                        .padding(8)
+                                }
+                            )
+                            .navigationBarTitle("\(newsData[0]["source"])")
+                            .font(.subheadline)
+                    }
+            })
             ForEach(1..<newsData.count, id: \.self) { index in
                 HStack {
                     VStack {
                         HStack {
-                            Text("\(newsData[index]["source"])")
+                            Text("\(newsData[index]["source"].stringValue)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .fontWeight(.bold)
@@ -599,12 +663,13 @@ struct StockDetailsView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 1)
-                        Text("\(newsData[index]["headline"])")
+                        Text("\(newsData[index]["headline"].stringValue)")
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .fontWeight(.bold)
                             .frame(alignment: .leading)
                             .padding(.leading, 0)
                     }
-                    Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     VStack {
                         KFImage(URL(string: "\(newsData[index]["image"])"))
                                 .resizable()
@@ -667,19 +732,6 @@ struct StockDetailsView: View {
             }
             
             return timeString
-        }
-    }
-    
-    struct NewsView: UIViewRepresentable {
-        let newsData: JSON
-        
-        func makeUIView(context: Context) -> some UIView {
-//            print("newsData: ", newsData)
-            print("image:", newsData[0]["image"])
-            return UIView()
-        }
-        
-        func updateUIView(_ uiView: UIViewType, context: Context) {
         }
     }
     
@@ -1001,7 +1053,7 @@ struct StockDetailsView: View {
             case .success:
                 if let newsData = response.data {
                     self.newsData = JSON(newsData)
-                    print(self.newsData!)
+//                    print(self.newsData!)
                 }
 
             case .failure(let error):
