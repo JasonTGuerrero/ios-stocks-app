@@ -251,19 +251,19 @@ struct StockDetailsView: View {
                     TabView {
                         if let priceChange = quoteData?["d"].doubleValue {
                         HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
-                            .frame(height: 350)
+                            .frame(height: 400)
                             .tabItem {
                                 Label("Hourly", systemImage: "chart.xyaxis.line")
                             }
                         }
 
                         HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
-                            .frame(height: 350)
+                            .frame(height: 400)
                             .tabItem {
                                 Label("Historical", systemImage: "clock.fill")
                             }
                     }
-                    .frame(height: 400)
+                    .frame(height: 450)
                     
                     VStack(alignment: .leading, content: {
                         Text("Portfolio")
