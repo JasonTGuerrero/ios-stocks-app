@@ -1,5 +1,6 @@
 <html>
 	<head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Historical Stock Chart</title>
 		<!-- Include Highcharts CDN -->
 		<script src="https://code.highcharts.com/stock/highstock.js"></script>
@@ -60,39 +61,24 @@
 			function renderChart(ohlc, volumes) {
 				groupingUnits = [
 					[
-						"week", // unit name
-						[1], // allowed multiples
+						"week",
+						[1],
 					],
 					["month", [1, 2, 3, 4, 6]],
 				];
 				Highcharts.stockChart("chart-container", {
 					rangeSelector: {
 						dropdown: "always",
-						height: 80
-					},
-					navigator: {
-						height: 80, // Adjust the height as needed
 					},
 					title: {
 						text: `${tickerSymbol} Historical`,
-						style: {
-							fontSize: "48px", // Set the font size for the title
-						},
 					},
 
 					subtitle: {
 						text: "With SMA and Volume by Price technical indicators",
-						style: {
-							fontSize: "36px", // Set the font size for the subtitle
-						},
 					},
 					xAxis: {
 						tickAmount: 3,
-						// labels: {
-						// 	style: {
-						// 		fontSize: "36px", // Adjust the font size as needed
-						// 	},
-						// },
 					},
 
 					yAxis: [
@@ -102,9 +88,6 @@
 							labels: {
 								align: "right",
 								x: -3,
-								style: {
-									fontSize: "36px", // Adjust the font size as needed
-								},
 							},
 							title: {
 								text: "OHLC",
@@ -119,9 +102,6 @@
 							labels: {
 								align: "right",
 								x: -3,
-								style: {
-									fontSize: "36px", // Adjust the font size as needed
-								},
 							},
 							title: {
 								text: "Volume",
@@ -135,9 +115,6 @@
 
 					tooltip: {
 						split: true,
-						style: {
-							fontSize: "32px", // Set the font size for the tooltip
-						},
 					},
 
 					plotOptions: {

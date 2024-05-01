@@ -217,7 +217,7 @@ struct StockDetailsView: View {
                         Text(companyName)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading)
+                            .padding(.leading, 22)
                             .padding(.top, 10)
                     }
                     
@@ -249,19 +249,19 @@ struct StockDetailsView: View {
                     .padding(.leading)
                     .padding(.top, 10)
                     TabView {
-//                        if let priceChange = quoteData?["d"].doubleValue {
-//                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
-//                            .frame(height: 350)
-//                            .tabItem {
-//                                Label("Hourly", systemImage: "chart.xyaxis.line")
-//                            }
-//                        }
-//
-//                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
-//                            .frame(height: 350)
-//                            .tabItem {
-//                                Label("Historical", systemImage: "clock.fill")
-//                            }
+                        if let priceChange = quoteData?["d"].doubleValue {
+                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
+                            .frame(height: 350)
+                            .tabItem {
+                                Label("Hourly", systemImage: "chart.xyaxis.line")
+                            }
+                        }
+
+                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
+                            .frame(height: 350)
+                            .tabItem {
+                                Label("Historical", systemImage: "clock.fill")
+                            }
                     }
                     .frame(height: 400)
                     
