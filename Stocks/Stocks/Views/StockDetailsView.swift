@@ -249,19 +249,19 @@ struct StockDetailsView: View {
                     .padding(.leading)
                     .padding(.top, 10)
                     TabView {
-                        if let priceChange = quoteData?["d"].doubleValue {
-                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
-                            .frame(height: 400)
-                            .tabItem {
-                                Label("Hourly", systemImage: "chart.xyaxis.line")
-                            }
-                        }
-
-                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
-                            .frame(height: 400)
-                            .tabItem {
-                                Label("Historical", systemImage: "clock.fill")
-                            }
+//                        if let priceChange = quoteData?["d"].doubleValue {
+//                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
+//                            .frame(height: 400)
+//                            .tabItem {
+//                                Label("Hourly", systemImage: "chart.xyaxis.line")
+//                            }
+//                        }
+//
+//                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
+//                            .frame(height: 400)
+//                            .tabItem {
+//                                Label("Historical", systemImage: "clock.fill")
+//                            }
                     }
                     .frame(height: 450)
                     
@@ -761,7 +761,7 @@ struct StockDetailsView: View {
             actualSeries.data = actuals
             actualSeries.marker = HIMarker()
             actualSeries.name = "Actual"
-//            actualSeries.xAxis = 0
+//            actualSeries.xAxis = 1
             
             let periodAxis = HIXAxis()
             periodAxis.categories = periods
@@ -772,9 +772,16 @@ struct StockDetailsView: View {
             combinedAxis.labels = HILabels()
             combinedAxis.labels.rotation = -45
 
+
             let options = HIOptions()
-            options.xAxis = [combinedAxis]
+            options.xAxis = [combinedAxis, surprisesAxis]
             options.series = [actualSeries, estimateSeries]
+            
+            let secondaryXAxis = HIXAxis()
+            secondaryXAxis.opposite = true
+            secondaryXAxis.visible = false
+
+            options.xAxis.append(secondaryXAxis)
 
             let chart = HIChart()
             chart.type = "spline"
