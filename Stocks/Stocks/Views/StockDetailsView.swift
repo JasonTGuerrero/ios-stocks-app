@@ -186,6 +186,8 @@ struct StockDetailsView: View {
     @State private var earningsData: JSON? = nil
     @State private var newsData: JSON? = nil
     @State private var isFavorite: Bool = false
+    @State private var showToast = false
+
 
     
     var body: some View {
@@ -439,7 +441,7 @@ struct StockDetailsView: View {
                                 .font(.system(size: 26))
                             
                         })
-                        Text("Social Sentiments")
+                        Text("Insider Sentiments")
                             .frame(alignment: .center)
                             .font(.system(size: 24))
                             .padding(.top)
@@ -480,11 +482,18 @@ struct StockDetailsView: View {
                 }
 
             }
+            .toast(isShowing: $showToast,text: Text("\(isFavorite ? "Adding" : "Removed") \(tickerSymbol) \(isFavorite ? "to" : "from") Favorites"))
             .navigationTitle(tickerSymbol)
             .navigationBarTitleDisplayMode(.large)
             .navigationBarItems(trailing:
                 Button(action: {
                     isFavorite.toggle()
+                    self.showToast.toggle()
+                    if self.showToast {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            self.showToast = false
+                        }
+                    }
                 }) {
                     Image(systemName: isFavorite ? "plus.circle.fill" : "plus.circle")
                         .resizable()

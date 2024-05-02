@@ -14,6 +14,7 @@
 		F415193E2BCC646F00C97AA2 /* SearchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F415193D2BCC646F00C97AA2 /* SearchScreenView.swift */; };
 		F41519402BCCE42C00C97AA2 /* StockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F415193F2BCCE42C00C97AA2 /* StockDetailsView.swift */; };
 		F41519432BD0F7C100C97AA2 /* Highcharts in Frameworks */ = {isa = PBXBuildFile; productRef = F41519422BD0F7C100C97AA2 /* Highcharts */; };
+		F42C9EA72BE3942D005DDEDC /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42C9EA62BE3942C005DDEDC /* Toast.swift */; };
 		F42F51812BC51BCC0013E834 /* StocksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F51802BC51BCC0013E834 /* StocksApp.swift */; };
 		F42F51832BC51BCC0013E834 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42F51822BC51BCC0013E834 /* ContentView.swift */; };
 		F42F51852BC51BCD0013E834 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F42F51842BC51BCD0013E834 /* Assets.xcassets */; };
@@ -54,6 +55,7 @@
 		F41519392BCA7B4200C97AA2 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		F415193D2BCC646F00C97AA2 /* SearchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreenView.swift; sourceTree = "<group>"; };
 		F415193F2BCCE42C00C97AA2 /* StockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailsView.swift; sourceTree = "<group>"; };
+		F42C9EA62BE3942C005DDEDC /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		F42F517D2BC51BCC0013E834 /* Stocks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stocks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F42F51802BC51BCC0013E834 /* StocksApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StocksApp.swift; sourceTree = "<group>"; };
 		F42F51822BC51BCC0013E834 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = "../New Group/ContentView.swift"; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 				F4AE9D542BC5201E004E220A /* HomeScreen.swift */,
 				F415193D2BCC646F00C97AA2 /* SearchScreenView.swift */,
 				F415193F2BCCE42C00C97AA2 /* StockDetailsView.swift */,
+				F42C9EA62BE3942C005DDEDC /* Toast.swift */,
 				F41519332BC6796100C97AA2 /* DateView.swift */,
 				F41519352BC769C700C97AA2 /* FinnhubLabelView.swift */,
 			);
@@ -328,6 +331,7 @@
 				F41519382BCA43CE00C97AA2 /* PortfolioView.swift in Sources */,
 				F415193E2BCC646F00C97AA2 /* SearchScreenView.swift in Sources */,
 				F41519362BC769C700C97AA2 /* FinnhubLabelView.swift in Sources */,
+				F42C9EA72BE3942D005DDEDC /* Toast.swift in Sources */,
 				F42F51812BC51BCC0013E834 /* StocksApp.swift in Sources */,
 				F415193A2BCA7B4300C97AA2 /* FavoritesView.swift in Sources */,
 				F41519342BC6796100C97AA2 /* DateView.swift in Sources */,

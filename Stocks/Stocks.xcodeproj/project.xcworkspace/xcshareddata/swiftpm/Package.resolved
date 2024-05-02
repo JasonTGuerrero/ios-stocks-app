@@ -1,5 +1,5 @@
 {
-  "originHash" : "f2d2cbf3d50360a0aaec20431425f0bd6c8e83270d576a69e71b23627a9faf2d",
+  "originHash" : "872f68c99bbd02ae7f884a39ec89b8a2810c0cef50bf308e7d9183f38f9399cf",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "f455c2975872ccd2d9c81594c658af65716e9b9a",
         "version" : "5.9.1"
+      }
+    },
+    {
+      "identity" : "alerttoast",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elai950/AlertToast.git",
+      "state" : {
+        "revision" : "b39252eacd159904afd7d718bba0afabb87f2f2f",
+        "version" : "1.3.9"
       }
     },
     {

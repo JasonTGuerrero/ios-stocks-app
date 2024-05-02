@@ -2,8 +2,8 @@ import SwiftUI
 import Alamofire
 import SwiftyJSON
 
-//let url = "http://localhost:3000"
-let url = "https://ios-api-422003.wl.r.appspot.com"
+let url = "http://localhost:3000"
+//let url = "https://ios-api-422003.wl.r.appspot.com"
 
 struct HomeScreen: View {
     @State private var searchText: String = ""
