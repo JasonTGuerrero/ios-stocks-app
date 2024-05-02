@@ -24,21 +24,17 @@ struct HourlyStockChartWebView: UIViewRepresentable {
         let webView = WKWebView()
         webView.navigationDelegate = context.coordinator
 
-        // Read the contents of the HTML file
         guard let htmlFilePath = Bundle.main.url(forResource: "hourly", withExtension: "html") else {
             fatalError("HTML file not found")
         }
 
         do {
-            // Read the contents of the HTML file as a String
             let htmlString = try String(contentsOf: htmlFilePath)
 
-            // Replace occurrences of '{tickerSymbol}' and '{priceChange}' with actual values
             let modifiedHTMLString = htmlString
                 .replacingOccurrences(of: "{-tickerSymbol-}", with: tickerSymbol)
                 .replacingOccurrences(of: "{-priceChange-}", with: String(format: "%.2f", priceChange))
 
-            // Load the modified HTML content into WKWebView
             webView.loadHTMLString(modifiedHTMLString, baseURL: htmlFilePath)
         } catch {
             fatalError("Error loading HTML content: \(error)")
@@ -50,7 +46,6 @@ struct HourlyStockChartWebView: UIViewRepresentable {
 
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        // Update the view if needed
     }
 
     func makeCoordinator() -> Coordinator {
@@ -64,7 +59,6 @@ struct HourlyStockChartWebView: UIViewRepresentable {
             self.tickerSymbol = tickerSymbol
         }
 
-        // Implement WKNavigationDelegate methods if needed
     }
 }
 
@@ -76,21 +70,17 @@ struct HistoricalStockChartWebView: UIViewRepresentable {
         let webView = WKWebView()
         webView.navigationDelegate = context.coordinator
 
-        // Read the contents of the HTML file
         guard let htmlFilePath = Bundle.main.url(forResource: "historical", withExtension: "html") else {
             fatalError("HTML file not found")
         }
 
         do {
-            // Read the contents of the HTML file as a String
             let htmlString = try String(contentsOf: htmlFilePath)
 
-            // Replace occurrences of '{tickerSymbol}' and '{priceChange}' with actual values
             let modifiedHTMLString = htmlString
                 .replacingOccurrences(of: "{-tickerSymbol-}", with: tickerSymbol)
             print("Modified hist HTML content:", modifiedHTMLString)
 
-            // Load the modified HTML content into WKWebView
             webView.loadHTMLString(modifiedHTMLString, baseURL: htmlFilePath)
         } catch {
             fatalError("Error loading HTML content: \(error)")
@@ -102,7 +92,6 @@ struct HistoricalStockChartWebView: UIViewRepresentable {
 
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        // Update the view if needed
     }
 
     func makeCoordinator() -> Coordinator {
@@ -251,19 +240,19 @@ struct StockDetailsView: View {
                     .padding(.leading)
                     .padding(.top, 10)
                     TabView {
-//                        if let priceChange = quoteData?["d"].doubleValue {
-//                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
-//                            .frame(height: 400)
-//                            .tabItem {
-//                                Label("Hourly", systemImage: "chart.xyaxis.line")
-//                            }
-//                        }
-//
-//                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
-//                            .frame(height: 400)
-//                            .tabItem {
-//                                Label("Historical", systemImage: "clock.fill")
-//                            }
+                        if let priceChange = quoteData?["d"].doubleValue {
+                        HourlyStockChartWebView(tickerSymbol: tickerSymbol, priceChange: priceChange)
+                            .frame(height: 400)
+                            .tabItem {
+                                Label("Hourly", systemImage: "chart.xyaxis.line")
+                            }
+                        }
+
+                        HistoricalStockChartWebView(tickerSymbol: tickerSymbol)
+                            .frame(height: 400)
+                            .tabItem {
+                                Label("Historical", systemImage: "clock.fill")
+                            }
                     }
                     .frame(height: 450)
                     
@@ -565,16 +554,12 @@ struct StockDetailsView: View {
         }
         
         func formatDate(from timestamp: TimeInterval) -> String {
-            // Convert Unix epoch timestamp to Date
             let date = Date(timeIntervalSince1970: timestamp)
             
-            // Create a DateFormatter instance
             let dateFormatter = DateFormatter()
             
-            // Set the date format
             dateFormatter.dateFormat = "MMMM dd, yyyy"
             
-            // Convert Date to String
             let dateString = dateFormatter.string(from: date)
             
             return dateString
